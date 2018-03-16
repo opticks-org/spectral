@@ -1,0 +1,10 @@
+*.user
+*.suo
+*.ncb
+Build
+Release
+build
+.parasoft.dat
+*.sdf
+*.opensdf
+ipch
