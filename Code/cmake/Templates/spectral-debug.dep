@@ -1,0 +1,1 @@
+!depV1 { deployment: { AppHomePath: ${Spectral_SOURCE_DIR}/../Release, PlugInPath: ${CMAKE_BINARY_DIR}/PlugIns/debug, UserConfigPath: ${CMAKE_BINARY_DIR}/ApplicationUserSettings } }
