@@ -336,6 +336,10 @@ configure_file(cmake/Templates/XercesIncludes.h "${Spectral_SOURCE_DIR}/Include/
 #----- Optional packages -----
 # Need components for Ace, Tad, Rx, and WangBovik. TODO check component requirements
 find_package(OpenCv COMPONENTS ImgProc)
+if(OpenCv_FOUND)
+   add_definitions(-DOpenCv_VERSION_MAJOR=${OpenCv_MAJOR_VERSION})
+   # message("OpenCv_VERSION_MAJOR = ${OpenCv_MAJOR_VERSION}")
+endif()
 
 set(OLD_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
 set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}" "${SPECTRAL_DEP_PATH}/tools/graphviz")
@@ -417,8 +421,8 @@ include_directories(${Xerces_INCLUDE_DIRS})
 if(HAVE_QT5)
    include_directories(${Qwt5ForQt5_INCLUDE_DIR})
 else()
-   # careful -- this finds /usr/include/qwt5-qt4 when it should have Dependencies64/include/qwt-qt4
-   # the fills are the same -- use diff -w -- but Dependencies Version is 5.2.1, while system is Version 5.2.2
+   # TODO Careful -- for DEFAULT builds this finds /usr/include/qwt5-qt4 when it should have Dependencies64/include/qwt-qt4
+   # the files are the same -- use diff -w -- but Dependencies Version is 5.2.1, while system is Version 5.2.2
    # Should still be fixed
    include_directories(${Qwt5ForQt4_INCLUDE_DIRS}) 
 endif()
