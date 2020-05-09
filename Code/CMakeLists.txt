@@ -310,6 +310,7 @@ Message(STATUS "QT_LIBRARIES: ${QT_LIBRARIES}")
 
 find_package(Boost 1.45.0 REQUIRED)
 find_package(Xerces REQUIRED)
+
 if(HAVE_QT5)
    set(Qwt5ForQt5_INCLUDE_DIR "/usr/include/qt5/qwt5-qt5" CACHE PATH "Directory containing Qwt5ForQt5 headers")
    find_package(Qwt5ForQt5 REQUIRED)
@@ -328,6 +329,9 @@ find_package(Glew REQUIRED)
 find_package(tiff REQUIRED)
 find_package(geotiff REQUIRED)
 find_package(proj REQUIRED)
+
+set(XERCES_NAMESPACE_VERSION "${Xerces_VERSION_MAJOR}_${Xerces_VERSION_MINOR}")
+configure_file(cmake/Templates/XercesIncludes.h "${Spectral_SOURCE_DIR}/Include/")
 
 #----- Optional packages -----
 # Need components for Ace, Tad, Rx, and WangBovik. TODO check component requirements
@@ -469,28 +473,39 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "${OLD_SHARED_LIBRARY_PREFIX}")
 
 
 if(ONE_SPECTRAL_LIB)
-    foreach(LIB_NAME IN LISTS SPECTRAL_PLUGINS)
-        get_directory_property(LIB_SOURCES DIRECTORY ${LIB_NAME} ALL_SOURCES)
-        foreach(SOURCE IN LISTS LIB_SOURCES)
-            list(APPEND SPECTRAL_LIB_SOURCES "${LIB_NAME}/${SOURCE}")
-        endforeach()
-        get_directory_property(LIB_MOC_HEADERS DIRECTORY ${LIB_NAME} MOC_HEADERS)
-        set(LIB_CONV_MOC_HEADERS "")
-        foreach(SOURCE IN LISTS LIB_MOC_HEADERS)
-            list(APPEND LIB_CONV_MOC_HEADERS "${LIB_NAME}/${SOURCE}")
-        endforeach()
-        qt4_wrap_cpp(LIB_MOC_OUTFILES ${LIB_CONV_MOC_HEADERS})
-        list(APPEND SPECTRAL_LIB_SOURCES ${LIB_MOC_OUTFILES} ${LIB_CONV_MOC_HEADERS})
-        get_directory_property(LIB_QRC_FILES DIRECTORY ${LIB_NAME} QRC_FILES)
-        set(LIB_CONV_QRC_FILES "")
-        foreach(SOURCE IN LISTS LIB_QRC_FILES)
-            list(APPEND LIB_CONV_QRC_FILES "${LIB_NAME}/${SOURCE}")
-        endforeach()
-        qt4_add_resources(LIB_RCC_OUTFILES ${LIB_CONV_QRC_FILES})
-        list(APPEND SPECTRAL_LIB_SOURCES ${LIB_RCC_OUTFILES} ${LIB_CONV_QRC_FILES})
-    endforeach()
-    add_library(SpectralLib STATIC ${SPECTRAL_LIB_SOURCES})
-    set(Spectral_LIBRARIES SpectralLib)
+   foreach(LIB_NAME IN LISTS SPECTRAL_PLUGINS)
+      get_directory_property(LIB_SOURCES DIRECTORY ${LIB_NAME} ALL_SOURCES)
+      foreach(SOURCE IN LISTS LIB_SOURCES)
+         list(APPEND SPECTRAL_LIB_SOURCES "${LIB_NAME}/${SOURCE}")
+      endforeach()
+      get_directory_property(LIB_MOC_HEADERS DIRECTORY ${LIB_NAME} MOC_HEADERS)
+      set(LIB_CONV_MOC_HEADERS "")
+      foreach(SOURCE IN LISTS LIB_MOC_HEADERS)
+         list(APPEND LIB_CONV_MOC_HEADERS "${LIB_NAME}/${SOURCE}")
+      endforeach()
+      qt4_wrap_cpp(LIB_MOC_OUTFILES ${LIB_CONV_MOC_HEADERS})
+      list(APPEND SPECTRAL_LIB_SOURCES ${LIB_MOC_OUTFILES} ${LIB_CONV_MOC_HEADERS})
+      get_directory_property(LIB_QRC_FILES DIRECTORY ${LIB_NAME} QRC_FILES)
+      set(LIB_CONV_QRC_FILES "")
+      foreach(SOURCE IN LISTS LIB_QRC_FILES)
+         list(APPEND LIB_CONV_QRC_FILES "${LIB_NAME}/${SOURCE}")
+      endforeach()
+      qt4_add_resources(LIB_RCC_OUTFILES ${LIB_CONV_QRC_FILES})
+      list(APPEND SPECTRAL_LIB_SOURCES ${LIB_RCC_OUTFILES} ${LIB_CONV_QRC_FILES})
+   endforeach()
+   # we only need one ModuleManager.cpp -- if that
+   list(REMOVE_DUPLICATES SPECTRAL_LIB_SOURCES)
+#   add_library(SpectralLib          STATIC ${SPECTRAL_LIB_SOURCES})
+   list(FILTER SPECTRAL_LIB_SOURCES EXCLUDE REGEX ^.*/ModuleManager.cpp)
+   list(APPEND SPECTRAL_LIB_SOURCES Ace/ModuleManager.cpp)
+   add_library(SpectralLib STATIC ${SPECTRAL_LIB_SOURCES})
+   #   add_library(Spectral    SHARED ${SPECTRAL_LIB_SOURCES})
+   add_library(Spectral    MODULE ${SPECTRAL_LIB_SOURCES})
+   set_target_properties(Spectral PROPERTIES PREFIX "")
+   target_link_libraries(Spectral
+      ${Opticks_LIBRARIES}
+      )
+   set(Spectral_LIBRARIES SpectralLib)
 endif()
 # add_executable(Spectral WIN32 ${SOURCE_FILES} ${INTERFACE_HEADER_FILES}) # Spectral is a plugin, not an executable...
 source_group(Interfaces FILES ${INTERFACE_HEADER_FILES})
@@ -539,7 +554,7 @@ feature_summary(WHAT ALL)
 
 
 
-install(TARGETS SpectralLib LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/PlugIns") # TODO bin -> lib or PlugInLib or something, see install(stuff) below 
+install(TARGETS SpectralLib Spectral LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/PlugIns") # TODO bin -> lib or PlugInLib or something, see install(stuff) below 
 
 #mark variables as advanced that the finders should have marked
 mark_as_advanced(FORCE QT_QMAKE_EXECUTABLE)

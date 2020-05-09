@@ -20,9 +20,14 @@ set (MOC_HEADERS
    ProfilePlotUtilities.h
    )
 
+set(QRC_FILES
+   Plotting.qrc
+   )
+
 if(ONE_SPECTRAL_LIB)
    set_property(DIRECTORY PROPERTY ALL_SOURCES ${SOURCE_FILES} ${HEADER_FILES})
    set_property(DIRECTORY PROPERTY MOC_HEADERS ${MOC_HEADERS})
+   set_property(DIRECTORY PROPERTY QRC_FILES ${QRC_FILES})
 else()
    qt4_wrap_cpp(MOC_OUTFILES ${MOC_HEADERS})
    source_group(moc FILES ${MOC_OUTFILES})
