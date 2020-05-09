@@ -85,7 +85,7 @@ bool WangBovik::populateBatchInputArgList(PlugInArgList* pInArgList)
       "Area of interest over which WBI will be performed. If not specified, the entire cube is used in processing."));
    VERIFY(pInArgList->addArg<bool>("Display Results", mInputs.mbDisplayResults,
       "Flag representing whether to display the results of the WBI operation."));
-   VERIFY(pInArgList->addArg<string>("Results Name", mInputs.mResultsName,
+   VERIFY(pInArgList->addArg<std::string>("Results Name", mInputs.mResultsName,
       "Name of the raster element resulting from the WBI operation."));
    return true;
 }
@@ -140,7 +140,7 @@ bool WangBovik::parseInputArgList(PlugInArgList* pInArgList)
       VERIFY(pInArgList->getPlugInArgValue("Display Results", mInputs.mbDisplayResults));
       VERIFY(pInArgList->getPlugInArgValue("Results Name", mInputs.mResultsName));
 
-      mInputs.mSignatures = SpectralUtilities::extractSignatures(vector<Signature*>(1, pSignatures));
+      mInputs.mSignatures = SpectralUtilities::extractSignatures(std::vector<Signature*>(1, pSignatures));
    }
    const BitMask* pBitMask = NULL;
    if (mInputs.mpAoi != NULL)
@@ -253,13 +253,13 @@ bool WangBovikAlgorithm::processAll()
    int iSignatureCount = mInputs.mSignatures.size();
 
    // Get colors for all the signatures
-   vector<ColorType> layerColors, excludeColors;
+   std::vector<ColorType> layerColors, excludeColors;
    excludeColors.push_back(ColorType(0, 0, 0));
    excludeColors.push_back(ColorType(255, 255, 255));
    ColorType::getUniqueColors(iSignatureCount, layerColors, excludeColors);
 
    // Create a vector for the signature names
-   vector<string> sigNames;
+   std::vector<std::string> sigNames;
 
    // Create a pseudocolor results matrix if necessary
    ModelResource<RasterElement> pPseudocolorMatrix(reinterpret_cast<RasterElement*>(NULL));
@@ -280,12 +280,12 @@ bool WangBovikAlgorithm::processAll()
 
       FactoryResource<DataRequest> pseudoRequest;
       pseudoRequest->setWritable(true);
-      string failedDataRequestErrorMessage =
+      std::string failedDataRequestErrorMessage =
          SpectralUtilities::getFailedDataRequestErrorMessage(pseudoRequest.get(), pPseudocolorMatrix.get());
       DataAccessor pseudoAccessor = pPseudocolorMatrix->getDataAccessor(pseudoRequest.release());
       if (!pseudoAccessor.isValid())
       {
-         string msg = "Unable to access results.";
+         std::string msg = "Unable to access results.";
          if (!failedDataRequestErrorMessage.empty())
          {
             msg += "\n" + failedDataRequestErrorMessage;
@@ -302,7 +302,7 @@ bool WangBovikAlgorithm::processAll()
       DataAccessor highestWangBovikValueAccessor = pHighestWangBovikValueMatrix->getDataAccessor(havRequest.release());
       if (!highestWangBovikValueAccessor.isValid())
       {
-         string msg = "Unable to access results.";
+         std::string msg = "Unable to access results.";
          if (!failedDataRequestErrorMessage.empty())
          {
             msg += "\n" + failedDataRequestErrorMessage;
@@ -375,10 +375,10 @@ bool WangBovikAlgorithm::processAll()
       //Send the message to the progress object
       QString messageSigNumber = QString("Processing Signature %1 of %2 : WBI running on signature %3")
          .arg(sig_index+1).arg(iSignatureCount).arg(QString::fromStdString(sigNames.back()));
-      string message = messageSigNumber.toStdString();
+      std::string message = messageSigNumber.toStdString();
 
-      vector<double> spectrumValues;
-      vector<int> resampledBands;
+      std::vector<double> spectrumValues;
+      std::vector<int> resampledBands;
       bSuccess = resampleSpectrum(pSignature, spectrumValues, pWavelengths.get(), resampledBands);
 
       // adjust signature values for the scaling factor
@@ -459,12 +459,12 @@ bool WangBovikAlgorithm::processAll()
                // output layer has been selected
                FactoryResource<DataRequest> pseudoRequest, currentRequest, highestRequest;
                pseudoRequest->setWritable(true);
-               string failedDataRequestErrorMessage =
+               std::string failedDataRequestErrorMessage =
                   SpectralUtilities::getFailedDataRequestErrorMessage(pseudoRequest.get(), pPseudocolorMatrix.get());
                DataAccessor daPseudoAccessor = pPseudocolorMatrix->getDataAccessor(pseudoRequest.release());
                if (!daPseudoAccessor.isValid())
                {
-                  string msg = "Unable to access data.";
+                  std::string msg = "Unable to access data.";
                   if (!failedDataRequestErrorMessage.empty())
                   {
                      msg += "\n" + failedDataRequestErrorMessage;
@@ -482,7 +482,7 @@ bool WangBovikAlgorithm::processAll()
                DataAccessor daHighestWangBovikValue = pHighestWangBovikValueMatrix->getDataAccessor(highestRequest.release());
                if (!daHighestWangBovikValue.isValid())
                {
-                  string msg = "Unable to access data.";
+                  std::string msg = "Unable to access data.";
                   if (!failedDataRequestErrorMessage.empty())
                   {
                      msg += "\n" + failedDataRequestErrorMessage;
@@ -591,8 +591,8 @@ bool WangBovikAlgorithm::processAll()
    return bSuccess;
 }
 
-bool WangBovikAlgorithm::resampleSpectrum(Signature* pSignature, vector<double>& resampledAmplitude,
-                                    Wavelengths* pWavelengths, vector<int>& resampledBands)
+bool WangBovikAlgorithm::resampleSpectrum(Signature* pSignature, std::vector<double>& resampledAmplitude,
+                                    Wavelengths* pWavelengths, std::vector<int>& resampledBands)
 {
    StepResource pStep("Resample Signature", "spectral", "933ECFAA-1F9E-495B-9CF1-AACC0EF2D2E5");
 
@@ -605,12 +605,12 @@ bool WangBovikAlgorithm::resampleSpectrum(Signature* pSignature, vector<double>&
 
       if (pSignature->getParent() == pElement)
       {
-         vector<double> sigReflectances =
-            dv_cast<vector<double> >(pSignature->getData("Reflectance"), vector<double>());
+         std::vector<double> sigReflectances =
+             dv_cast<std::vector<double> >(pSignature->getData("Reflectance"), std::vector<double>());
          resampledAmplitude = sigReflectances;
 
          resampledBands.clear();
-         for (vector<double>::size_type i = 0; i < sigReflectances.size(); ++i)
+         for (std::vector<double>::size_type i = 0; i < sigReflectances.size(); ++i)
          {
             resampledBands.push_back(static_cast<int>(i));
          }
@@ -619,37 +619,37 @@ bool WangBovikAlgorithm::resampleSpectrum(Signature* pSignature, vector<double>&
          return true;
       }
 
-      string messageText = "The data set wavelengths are invalid.";
+      std::string messageText = "The data set wavelengths are invalid.";
       if (pProgress != NULL) pProgress->updateProgress(messageText, 0, ERRORS);
       pStep->finalize(Message::Failure, messageText);
       return false;
    }
 
-   vector<double> fwhm = pWavelengths->getFwhm();
+   std::vector<double> fwhm = pWavelengths->getFwhm();
    PlugInResource resampler("Resampler");
    Resampler* pResampler = dynamic_cast<Resampler*>(resampler.get());
    if (pResampler == NULL)
    {
-      string messageText = "The resampler plug-in could not be created.";
+      std::string messageText = "The resampler plug-in could not be created.";
       if (pProgress != NULL) pProgress->updateProgress(messageText, 0, ERRORS);
       pStep->finalize(Message::Failure, messageText);
       return false;
    }
-   string err;
+   std::string err;
    try
    {
-      vector<double> sigReflectance = dv_cast<vector<double> >(pSignature->getData("Reflectance"));
+      std::vector<double> sigReflectance = dv_cast<std::vector<double> >(pSignature->getData("Reflectance"));
       resampledAmplitude.reserve(sigReflectance.size());
       resampledBands.reserve(sigReflectance.size());
       if (!pResampler->execute(sigReflectance,
                               resampledAmplitude,
-                              dv_cast<vector<double> >(pSignature->getData("Wavelength")),
+                              dv_cast<std::vector<double> >(pSignature->getData("Wavelength")),
                               pWavelengths->getCenterValues(),
                               fwhm,
                               resampledBands,
                               err))
       {
-         string messageText = "Resampling failed: " + err;
+         std::string messageText = "Resampling failed: " + err;
          if (pProgress != NULL) pProgress->updateProgress(messageText, 0, ERRORS);
          pStep->finalize(Message::Failure, messageText);
          return false;
@@ -657,7 +657,7 @@ bool WangBovikAlgorithm::resampleSpectrum(Signature* pSignature, vector<double>&
    }
    catch(std::bad_cast&)
    {
-      string messageText = "Resampling failed: " + err;
+      std::string messageText = "Resampling failed: " + err;
       if (pProgress != NULL) pProgress->updateProgress(messageText, 0, ERRORS);
       pStep->finalize(Message::Failure, messageText);
       return false;
@@ -667,7 +667,7 @@ bool WangBovikAlgorithm::resampleSpectrum(Signature* pSignature, vector<double>&
    return true;
 }
 
-RasterElement* WangBovikAlgorithm::createResults(int numRows, int numColumns, int numBands, const string& sigName)
+RasterElement* WangBovikAlgorithm::createResults(int numRows, int numColumns, int numBands, const std::string& sigName)
 {
    RasterElement* pElement = getRasterElement();
    if (pElement == NULL)
@@ -704,7 +704,7 @@ RasterElement* WangBovikAlgorithm::createResults(int numRows, int numColumns, in
    pUnits->setUnitType(CUSTOM_UNIT);
    pUnits->setUnitName("Index Value");
 
-   vector<int> badValues(1, -99);
+   std::vector<int> badValues(1, -99);
 
    RasterDataDescriptor* pResultsDescriptor = static_cast<RasterDataDescriptor*>(pResults->getDataDescriptor());
    VERIFYRV(pResultsDescriptor != NULL, NULL);

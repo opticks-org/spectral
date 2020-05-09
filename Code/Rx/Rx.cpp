@@ -416,8 +416,8 @@ bool Rx::execute(PlugInArgList *pInArgList, PlugInArgList *pOutArgList)
    AoiElement* pLocalAoi = NULL;
 
    //clear out any filtered input when rerunning the tool
-   string filterInputName = "RX Filtered Input";
-   string resultsName = "RX Results";
+   std::string filterInputName = "RX Filtered Input";
+   std::string resultsName = "RX Results";
 
    // Calculate PCA, remove "components" and invert the PCA...the result will be pRaster
    if (useSubspace)
@@ -980,7 +980,7 @@ bool Rx::execute(PlugInArgList *pInArgList, PlugInArgList *pOutArgList)
    return true;
 }
 
-RasterElement* Rx::createResults(int numRows, int numColumns, int numBands, const string& sigName, 
+RasterElement* Rx::createResults(int numRows, int numColumns, int numBands, const std::string& sigName,
    EncodingType eType, RasterElement* pElement)
 {
    clearPreviousResults(sigName, pElement);
@@ -998,7 +998,7 @@ RasterElement* Rx::createResults(int numRows, int numColumns, int numBands, cons
    return pResult.release();
 }
 
-void Rx::clearPreviousResults(const string& sigName, RasterElement* pElement)
+void Rx::clearPreviousResults(const std::string& sigName, RasterElement* pElement)
 {
    ModelResource<RasterElement> pResult(static_cast<RasterElement*>(
       Service<ModelServices>()->getElement(sigName, TypeConverter::toString<RasterElement>(), pElement)));
