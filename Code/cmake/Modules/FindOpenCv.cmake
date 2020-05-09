@@ -8,6 +8,20 @@ if(OpenCv_INCLUDE_DIR AND EXISTS "${OpenCv_INCLUDE_DIR}/opencv2/core/version.hpp
     string(REGEX REPLACE "^.*CV_MINOR_VERSION.*([0-9]+).*$" "\\1" OpenCv_VERSION_MINOR "${OpenCv_Parsed_Minor_Version}")
     string(REGEX REPLACE "^.*CV_SUBMINOR_VERSION.*([0-9]+).*$" "\\1" OpenCv_VERSION_RELEASE "${OpenCv_Parsed_Subminor_Version}")
 
+    if(NOT OpenCv_Parsed_Major_Version)
+       # Because newer opencv2/core/version.cpp can do things like
+       #   #define CV_VERSION_MAJOR    3
+       #   /* old  style version constants*/
+       #   #define CV_MAJOR_VERSION    CV_VERSION_MAJOR
+       # which won't be correctly parsed above, as CV_MAJOR_VERSION is not an explicit integer value. That will be set later by the preprocessor
+       file(STRINGS "${OpenCv_INCLUDE_DIR}/opencv2/core/version.hpp" OpenCv_Parsed_Major_Version REGEX "^#define CV_VERSION_MAJOR.*[0-9]+.*$")
+       file(STRINGS "${OpenCv_INCLUDE_DIR}/opencv2/core/version.hpp" OpenCv_Parsed_Minor_Version REGEX "^#define CV_VERSION_MINOR.*[0-9]+.*$")
+       file(STRINGS "${OpenCv_INCLUDE_DIR}/opencv2/core/version.hpp" OpenCv_Parsed_Subminor_Version REGEX "^#define CV_VERSION_REVISION.*[0-9]+.*$")
+       string(REGEX REPLACE "^.*CV_VERSION_MAJOR.*([0-9]+).*$" "\\1" OpenCv_VERSION_MAJOR "${OpenCv_Parsed_Major_Version}")
+       string(REGEX REPLACE "^.*CV_VERSION_MINOR.*([0-9]+).*$" "\\1" OpenCv_VERSION_MINOR "${OpenCv_Parsed_Minor_Version}")
+       string(REGEX REPLACE "^.*CV_VERSION_REVISION.*([0-9]+).*$" "\\1" OpenCv_VERSION_RELEASE "${OpenCv_Parsed_Subminor_Version}")
+    endif()
+    
     set(OpenCv_VERSION_STRING "${OpenCv_VERSION_MAJOR}.${OpenCv_VERSION_MINOR}.${OpenCv_VERSION_RELEASE}")
     set(OpenCv_COMPACT_VERSION_STRING "${OpenCv_VERSION_MAJOR}${OpenCv_VERSION_MINOR}${OpenCv_VERSION_RELEASE}")
     set(OpenCv_MAJOR_VERSION "${OpenCv_VERSION_MAJOR}")
