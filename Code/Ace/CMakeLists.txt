@@ -11,6 +11,9 @@ set (SOURCE_FILES
    )
 
 set (MOC_HEADERS
+   AceDlg.h
+   AceErr.h
+   Ace.h
    )
 
 if(ONE_SPECTRAL_LIB)

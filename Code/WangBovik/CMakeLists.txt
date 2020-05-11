@@ -11,6 +11,9 @@ set (SOURCE_FILES
    )
 
 set (MOC_HEADERS
+   WangBovikDlg.h
+   WangBovikErr.h
+   WangBovik.h
    )
 
 if(ONE_SPECTRAL_LIB)

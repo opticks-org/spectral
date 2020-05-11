@@ -10,6 +10,8 @@ set (SOURCE_FILES
    )
 
 set (MOC_HEADERS
+   CemDlg.h
+   Cem.h
    )
 
 if(ONE_SPECTRAL_LIB)
