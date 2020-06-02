@@ -7,10 +7,13 @@ if(DEFINED CMAKE_BUILD_TYPE)
 else()
    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build. options are: None, Debug, Release, RelWithDebInfo, MinSizeRel")
 endif()
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+
 if(CMAKE_INSTALL_PREFIX)
    set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE PATH "Location to install Spectral" FORCE)
 else()
    set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/../install CACHE PATH "Location to install Spectral" FORCE)
+#   set(CMAKE_INSTALL_PREFIX get_filename_component(PARENT_DIR ${CMAKE_BINARY_DIR} DIRECTORY)/install CACHE PATH "Location to install Spectral" FORCE)
 endif()
 
 # Prevent in-source builds, build directory must be external to the source tree
@@ -53,7 +56,7 @@ else()
 endif()
 set(Opticks_CODEDIR ${OPTICKS_DEFAULT_CODEDIR} CACHE PATH "Path to the opticks/Code directory for which this Spectral plugin is to be built.")
 
-if(EXISTS ${Opticks_CODEDIR})
+if(IS_DIRECTORY ${Opticks_CODEDIR})
    message("Found Opticks Code directory ${Opticks_CODEDIR}")
 else()
    message(SEND_ERROR " Opticks_CODEDIR ${Opticks_CODEDIR} not found!")
@@ -66,16 +69,23 @@ else()
 endif()
 set(Opticks_BUILDDIR ${OPTICKS_DEFAULT_BUILDDIR} CACHE PATH "Path to opticks CMake Build directory for which this Spectral plugin is to be built.")
 
-if(EXISTS ${Opticks_BUILDDIR})
+if(IS_DIRECTORY ${Opticks_BUILDDIR})
    message("Found Opticks_BUILDDIR directory ${Opticks_BUILDDIR}")
    set(Opticks_LIBDIR ${Opticks_BUILDDIR}/lib)
-   if(EXISTS ${Opticks_LIBDIR})
-      set(Opticks_LIBRARIES
-#         ${Opticks_LIBDIR}/libopticks-hdfpluginlib.a
-#         ${Opticks_LIBDIR}/libopticks-nitfpluginlib.a
-         ${Opticks_LIBDIR}/libopticks-pluginutilities.a
-         ${Opticks_LIBDIR}/libopticks-pluginlib.a
-         )
+   if(IS_DIRECTORY ${Opticks_LIBDIR})
+      if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+         set(Opticks_LIBRARIES
+            ${Opticks_LIBDIR}/libopticks-pluginutilitiesd.a
+            ${Opticks_LIBDIR}/libopticks-pluginlibd.a
+            )
+      else()
+         set(Opticks_LIBRARIES
+            #         ${Opticks_LIBDIR}/libopticks-hdfpluginlib.a
+            #         ${Opticks_LIBDIR}/libopticks-nitfpluginlib.a
+            ${Opticks_LIBDIR}/libopticks-pluginutilities.a
+            ${Opticks_LIBDIR}/libopticks-pluginlib.a
+            )
+      endif()
       message("Opticks_LIBRARIES: ${Opticks_LIBRARIES}") # TODO make VERBOSE
    else()
       message(SEND_ERROR " Opticks_LIBDIR ${Opticks_LIBDIR} not found!")
@@ -94,8 +104,8 @@ endif()
 
 if($ENV{SPECTRAL_BUILD_DIR})
    set(Spectral_BUILDDIR $ENV{SPECTRAL_BUILD_DIR} CACHE PATH "Path to where you want this Spectral plugin to be built." FORCE)
-else() # TODO use cmake's OS-agnostic path join facility
-   set(Spectral_BUILDDIR ${Spectral_CODEDIR}/../Build CACHE PATH "Path to where you want this Spectral plugin to be built." FORCE)
+else()
+   set(get_filename_component(Spectral_BUILDDIR ${Spectral_CODEDIR}/../Build ABSOLUTE) CACHE PATH "Path to where you want this Spectral plugin to be built." FORCE)
 endif()
 
 # Location of the Dependencies directory. On some platforms and configurations, it may not be necessary, but it's still searched.
@@ -164,7 +174,7 @@ endif()
 if(WIN32)
     set(ONE_SPECTRAL_LIB FALSE)
 else()
-    set(ONE_SPECTRAL_LIB TRUE)
+    set(ONE_SPECTRAL_LIB FALSE)
 endif()
 
 set(Spectral_INCLUDE_DIRS
@@ -244,23 +254,46 @@ set(OpenGL_GL_PREFERENCE GLVND)
 # here, that /usr/share/cmake/Modules/FindQt4.cmake would otherwise call later after querying
 # qmake for an invalid QT_BINARY_DIR path:
 set(HAVE_QT5 0)
-set(QT_BINARY_DIR ${Spectral_DEPENDENCIES}/${BITS}/bin CACHE STRING "directory containing qmake, moc, uic, rcc. default ${Spectral_DEPENDENCIES}/${BITS}/bin")
-set(QT_QMAKE_EXECUTABLE ${QT_BINARY_DIR}/qmake CACHE STRING "path to qmake. default ${QT_BINARY_DIR}/qmake")
-message(VERBOSE " QT_BINARY_DIR:       ${QT_BINARY_DIR}")
-message(VERBOSE " QT_QMAKE_EXECUTABLE: ${QT_QMAKE_EXECUTABLE}")
+set(HAVE_QSAVEFILE 0) # likely not an issue for Spectral
+if(EXISTS ${SPECTRAL_DEP_PATH}/bin/qmake)
+   set(QT_BINARY_DIR "${SPECTRAL_DEP_PATH}/bin" CACHE PATH "directory containing qmake, moc, uic, rcc. default ${SPECTRAL_DEP_PATH}/bin")
+else()
+   # /usr/lib64 okay for RedHat; we'll make a better OS-dependent guess with CMAKE_SYSTEM_LIBRARY_PATH. But we need
+   # to set a default in case the foreach() loop fails to fins anything, and RedHat's /usr/lib64/qt4/bin is as good as any.
+   set(QT_BINARY_DIR "/usr/lib64/qt4/bin" CACHE PATH "directory containing qmake, moc, uic, rcc. default /usr/lib64/qt4/bin")
+   foreach(lib ${CMAKE_SYSTEM_LIBRARY_PATH})
+      if(EXISTS "${lib}/qt4/bin")
+         set(QT_BINARY_DIR "${lib}/qt4/bin" CACHE PATH "directory containing qmake, moc, uic, rcc. default ${lib}/qt4/bin")
+         break()
+      endif()
+   endforeach()
+endif()
+message(STATUS "QT Binary Dir: ${QT_BINARY_DIR}")
+set(QT_QMAKE_EXECUTABLE ${QT_BINARY_DIR}/qmake CACHE FILEPATH "path to qmake. default ${QT_BINARY_DIR}/qmake")
+if(EXISTS ${QT_QMAKE_EXECUTABLE})
+   message(STATUS "Found QT QMake Executable: ${QT_QMAKE_EXECUTABLE}")
+endif()
 if(EXISTS ${QT_QMAKE_EXECUTABLE})
    # Get Qt version from Qmake
    execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_VERSION OUTPUT_VARIABLE qt_version  OUTPUT_STRIP_TRAILING_WHITESPACE)
    execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_LIBS OUTPUT_VARIABLE qt_install_libs  OUTPUT_STRIP_TRAILING_WHITESPACE)
-   message(" Qt version: ${qt_version}")
-   if("${qt_version}" VERSION_GREATER_EQUAL "5.0.0")
+   message(STATUS "Found Qt version \"${qt_version}\"")
+   if("${qt_version}" VERSION_GREATER "5.0.0")
       set(HAVE_QT5 1)
+      set(HAVE_QSAVEFILE 1) # Experimental: Qt5 writes disk files more reliably with QSaveFile than with QFile
       set(QT_Qt5_DIR "${qt_install_libs}/cmake/Qt5" CACHE PATH "Path to directory containing Qt5Config.cmake")
       set(Qt5_DIR ${QT_Qt5_DIR})
-      set(ENV{CMAKE_PREFIX_PATH} ${Qt5_DIR}) # might not be necessary
-      set(CMAKE_AUTOMOC ON)
-      set(CMAKE_AUTORCC ON)
-      set(CMAKE_AUTOUIC ON)
+      if(IS_DIRECTORY ${Qt5_DIR})
+         message(STATUS "Found Qt5_DIR: ${Qt5_DIR}")
+      else()
+         message(WARNING  " ${Qt5_DIR} NOT FOUND")
+      endif()
+      # TODO: Determine if CMAKE_AUTOMOC etc may be used instead of qt*_wrap_cpp() etc. macros.
+      #       Might simplify things a bit if they can.
+      #       See https://cmake.org/cmake/help/v3.12/prop_tgt/AUTOMOC.html#prop_tgt:AUTOMOC
+      # set(CMAKE_AUTOMOC ON)
+      # set(CMAKE_AUTORCC ON)
+      # set(CMAKE_AUTOUIC ON)
    else()
       # Qt4
       if(EXISTS ${QT_BINARY_DIR})
@@ -279,9 +312,9 @@ if(EXISTS ${QT_QMAKE_EXECUTABLE})
             PATHS ${QT_BINARY_DIR}
             NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH
             )
-         message(VERBOSE " Moc: ${QT_MOC_EXECUTABLE}")
-         message(VERBOSE " Uic: ${QT_UIC_EXECUTABLE}")
-         message(VERBOSE " Rcc: ${QT_RCC_EXECUTABLE}")
+         message(STATUS "Moc: ${QT_MOC_EXECUTABLE}")
+         message(STATUS "Uic: ${QT_UIC_EXECUTABLE}")
+         message(STATUS "Rcc: ${QT_RCC_EXECUTABLE}")
       else()
          message(WARNING " QT_BINARY_DIR ${QT_BINARY_DIR} does not exists")
       endif()
@@ -290,11 +323,14 @@ else()
    message(WARNING " QT_QMAKE_EXECUTABLE ${QT_QMAKE_EXECUTABLE} does not exist")
 endif()
 add_definitions(-DHAVE_QT5=${HAVE_QT5})
+add_definitions(-DHAVE_QSAVEFILE=${HAVE_QSAVEFILE})
 
 if(HAVE_QT5)
    # We include(${QT_USE_FILE}) throughout for Qt4. Qt5 doesn't use it. Check if
    # QT_USE_FILE is empty, and set it to a dummy file if it is.
-   set(QT_USE_FILE QtDummy)
+   if(NOT QT_USE_FILE)
+      set(QT_USE_FILE QtDummy)
+   endif()
 
    # Redefine some qt4 macros for qt5:
    macro(qt4_wrap_cpp)
@@ -311,34 +347,45 @@ if(HAVE_QT5)
    add_definitions(-DQt_VERSION_MAJOR=${Qt5_VERSION_MAJOR})
    set(QT_INCLUDE_DIRS ${Qt5Core_INCLUDE_DIRS};${Qt5Gui_INCLUDE_DIRS};${Qt5Widgets_INCLUDE_DIRS};${Qt5OpenGL_INCLUDE_DIRS};${Qt5Xml_INCLUDE_DIRS};${Qt5Network_INCLUDE_DIRS};${Qt5PrintSupport_INCLUDE_DIRS})
    set(QT_LIBRARIES ${Qt5Core_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5OpenGL_LIBRARIES} ${Qt5Xml_LIBRARIES} ${Qt5Network_LIBRARIES} ${Qt5PrintSupport_LIBRARIES})
+   # message(STATUS "QT_INCLUDE_DIRS: ${QT_INCLUDE_DIRS}")
+   # message(STATUS "QT_LIBRARIES: ${QT_LIBRARIES}")
 else()
    find_package(Qt4 COMPONENTS QtCore QtGui QtOpenGL QtXml QtNetwork REQUIRED)
    set(Qt_VERSION_MAJOR 4)
    add_definitions(-DQt_VERSION_MAJOR=${Qt_VERSION_MAJOR})
 endif(HAVE_QT5)
 include_directories(${QT_INCLUDE_DIRS})
-Message(STATUS "QT_INCLUDE_DIRS: ${QT_INCLUDE_DIRS}")
-Message(STATUS "QT_LIBRARIES: ${QT_LIBRARIES}")
+# Debug messages:
+# Message(STATUS "QT_INCLUDES: ${QT_INCLUDES}")
+# Message(STATUS "QT_INCLUDE_DIRS: ${QT_INCLUDE_DIRS}")
+# Message(STATUS "QT_LIBRARIES: ${QT_LIBRARIES}")
 #######################################################################################
-
-find_package(Boost 1.45.0 REQUIRED)
-find_package(Xerces REQUIRED)
-
 if(HAVE_QT5)
-   set(Qwt5ForQt5_INCLUDE_DIR "/usr/include/qt5/qwt5-qt5" CACHE PATH "Directory containing Qwt5ForQt5 headers")
    find_package(Qwt5ForQt5 REQUIRED)
    include_directories(${Qwt5ForQt5_INCLUDE_DIR})
-   message(STATUS "Qwt5ForQt5_INCLUDE_DIR: ${Qwt5ForQt5_INCLUDE_DIR}")
+   # It's important the user can verify which Qwt5-qt5 library she's linking,
+   # in case she's specified a non-system qt5 and doesn't want to p;ivk up a
+   # system qwt5-qt5 by mistake:
+   if(Qwt5ForQt5_FOUND)
+      message(STATUS "Found Qwt5ForQt5_LIBRARY: ${Qwt5ForQt5_LIBRARY}")
+   else()
+      message(STATUS "${Qwt5ForQt5_LIBRARY}")
+   endif()
 else()
-   set(Qwt5ForQt4_INCLUDE_DIR "/usr/include/qwt5-qt4" CACHE PATH "Directory containing Qwt5ForQt4 headers")
    find_package(Qwt5ForQt4 REQUIRED)
+   include_directories(${Qwt5ForQt4_INCLUDE_DIRS})
+   if(Qwt5ForQt4_FOUND)
+      message(STATUS "Found Qwt5ForQt4_LIBRARY: ${Qwt5ForQt4_LIBRARY}")
+   else()
+      message(STATUS "${Qwt5ForQt4_LIBRARY}")
+   endif()
 endif()
+#######################################################################################
+find_package(Boost 1.45.0 REQUIRED)
+find_package(Xerces REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Glew REQUIRED)
-#find_package(Hdf4 COMPONENTS SD REQUIRED)
-#find_package(Hdf5 REQUIRED)
-#find_package(shapelib REQUIRED)
 find_package(tiff REQUIRED)
 find_package(geotiff REQUIRED)
 find_package(proj REQUIRED)
@@ -351,6 +398,7 @@ configure_file(cmake/Templates/XercesIncludes.h "${Spectral_SOURCE_DIR}/Include/
 find_package(OpenCv COMPONENTS ImgProc Flann)
 if(OpenCv_FOUND)
    add_definitions(-DOpenCv_VERSION_MAJOR=${OpenCv_MAJOR_VERSION})
+   include_directories(${OpenCv_INCLUDE_DIRS})
 endif()
 
 set(OLD_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
@@ -390,13 +438,20 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/bin")
 
 include_directories(${Spectral_INCLUDE_DIRS})
-include_directories(${Spectral_BINARY_DIR}) # Is this needed? There are no header files here
+include_directories(${Spectral_BINARY_DIR}) # TODO Is this needed? There are no header files here
 #############################################################
-# Ideally, we would like options to set Opticks libraries and includes from Opticks' install directory, or it's build directory
-# we're already using it's Build directory, and will put Spectral there when done. We should be able to do the same with
-# install directory, so user needn't have an Opticks_BUILDDIR, only an install. The install directory created by Opticks' CMake
-# has the needed libs and headers, although the default installed in /opt/Opticks by opticks-4.12.0-3.x86_64.rpm does not.
-# 
+# TODO: Ideally, we would like options to set Opticks libraries and includes either from Opticks' install directory, or from
+# it's build directory. We're already using it's Build directory, and will put Spectral there when done. We should be able to do 
+# the same with install directory, so user needn't have an Opticks_BUILDDIR, only an install. The install directory created by
+# Opticks' CMake has the needed libs and headers, although the default installed in /opt/Opticks by opticks-4.12.0-3.x86_64.rpm
+# does not.
+# BUT... Spectral must be linked to the same Dependency libraries as Opticks, so in addition to Opticks' install dir, we would
+# also need a Dependencies dir, which for a default dependencies build is trivial as we already have one. But for CUSTOM
+# builds using system or custom dependencies e.g. GDAL, Spectral configuration still needs to be against those used by Opticks.
+# Installing all three in a common place e.g. /usr/local/Opticks-4.12.1/Opticks, /usr/local/Opticks-4.12.1/Spectral, and
+# /usr/local/Opticks-4.12.1/Dependencies would at least keep things localized. Dependencies could also include a path list of
+# each library used, such as whether /usr/local/Opticks-4.12.1/Dependencies/64/lib/libgdal.so.1 or /usr/lib64/libgdal.so.20.
+# (Later...)
 set(Opticks_COREDIR ${Opticks_CODEDIR}/application)
 if(NOT EXISTS ${Opticks_COREDIR})
    message(SEND_ERROR "Opticks Code/application directory ${Opticks_COREDIR} not found")
@@ -425,11 +480,10 @@ set(Opticks_INCLUDE_DIRS
 include_directories(${Opticks_INCLUDE_DIRS})
 #############################################################
 
-
 include(${QT_USE_FILE})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${Xerces_INCLUDE_DIRS})
-#include_directories(${XQilla_INCLUDE_DIRS})
+if(0) # TODO Already done. Remove after testing
 if(HAVE_QT5)
    include_directories(${Qwt5ForQt5_INCLUDE_DIR})
 else()
@@ -438,6 +492,7 @@ else()
    # Should still be fixed
    include_directories(${Qwt5ForQt4_INCLUDE_DIRS}) 
 endif()
+endif()
 include_directories(${ZLIB_INCLUDE_DIRS})
 include_directories(${OPENGL_INCLUDE_DIRS})
 include_directories(${Glew_INCLUDE_DIRS})
@@ -445,14 +500,14 @@ include_directories(${tiff_INCLUDE_DIRS})
 include_directories(${geotiff_INCLUDE_DIRS})
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    include_directories(${EXPAT_INCLUDE_DIRS}) # is this needed for Qt5?
+    include_directories(${EXPAT_INCLUDE_DIRS}) # expat is an XML parser
 endif()
-
-
 
 add_definitions(-DAPPLICATION_XERCES)
 
-add_subdirectory(SpectralUtilities)
+#add_subdirectory(SpectralUtilities ${CMAKE_BINARY_DIR}/LibPrivate)
+add_subdirectory(SpectralUtilities LibPrivate)
+get_directory_property(LIB_SOURCES DIRECTORY SpectralUtilities DEFINITION ALL_SOURCES)
 
 set(OLD_SHARED_LIBRARY_PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
@@ -474,63 +529,30 @@ set(SPECTRAL_PLUGINS # all subfolders that contain a ModuleManager.cpp or module
     SpectralLibrary
     SpectralLibraryMatch
     )
-  if(OpenCv_FOUND)
-     list(APPEND SPECTRAL_PLUGINS
+if(OpenCv_FOUND)
+   list(APPEND SPECTRAL_PLUGINS
         Ace
         Rx
         Tad
         WangBovik
         )
-  endif()
+endif()
+  set(ONE_SPECTRAL_LIB ON) # We'll never want one spectral lib, it has many separate plugins
 foreach(LIB_NAME IN LISTS SPECTRAL_PLUGINS)
    add_subdirectory(${LIB_NAME})
 endforeach()
 set(CMAKE_SHARED_LIBRARY_PREFIX "${OLD_SHARED_LIBRARY_PREFIX}")
 
-set(ONE_SPECTRAL_LIB OFF) # We'll never want one spectral lib, it has many separate plugins
-if(ONE_SPECTRAL_LIB)
-   # eventually eliminate this
-   foreach(LIB_NAME IN LISTS SPECTRAL_PLUGINS)
-      get_directory_property(LIB_SOURCES DIRECTORY ${LIB_NAME} ALL_SOURCES)
-      foreach(SOURCE IN LISTS LIB_SOURCES)
-         list(APPEND SPECTRAL_LIB_SOURCES "${LIB_NAME}/${SOURCE}")
-      endforeach()
-      get_directory_property(LIB_MOC_HEADERS DIRECTORY ${LIB_NAME} MOC_HEADERS)
-      set(LIB_CONV_MOC_HEADERS "")
-      foreach(SOURCE IN LISTS LIB_MOC_HEADERS)
-         list(APPEND LIB_CONV_MOC_HEADERS "${LIB_NAME}/${SOURCE}")
-      endforeach()
-      qt4_wrap_cpp(LIB_MOC_OUTFILES ${LIB_CONV_MOC_HEADERS})
-      list(APPEND SPECTRAL_LIB_SOURCES ${LIB_MOC_OUTFILES} ${LIB_CONV_MOC_HEADERS})
-      get_directory_property(LIB_QRC_FILES DIRECTORY ${LIB_NAME} QRC_FILES)
-      set(LIB_CONV_QRC_FILES "")
-      foreach(SOURCE IN LISTS LIB_QRC_FILES)
-         list(APPEND LIB_CONV_QRC_FILES "${LIB_NAME}/${SOURCE}")
-      endforeach()
-      qt4_add_resources(LIB_RCC_OUTFILES ${LIB_CONV_QRC_FILES})
-      list(APPEND SPECTRAL_LIB_SOURCES ${LIB_RCC_OUTFILES} ${LIB_CONV_QRC_FILES})
-   endforeach()
-   # we only need one ModuleManager.cpp -- if that
-   list(REMOVE_DUPLICATES SPECTRAL_LIB_SOURCES)
-#   add_library(SpectralLib          STATIC ${SPECTRAL_LIB_SOURCES})
-   list(FILTER SPECTRAL_LIB_SOURCES EXCLUDE REGEX ^.*/ModuleManager.cpp)
-   list(APPEND SPECTRAL_LIB_SOURCES Ace/ModuleManager.cpp)
-   add_library(SpectralLib STATIC ${SPECTRAL_LIB_SOURCES})
-   #   add_library(Spectral    SHARED ${SPECTRAL_LIB_SOURCES})
-   add_library(Spectral    MODULE ${SPECTRAL_LIB_SOURCES})
-   set_target_properties(Spectral PROPERTIES PREFIX "")
-   target_link_libraries(Spectral
-      ${Opticks_LIBRARIES}
-      )
-   set(Spectral_LIBRARIES SpectralLib)
-else() # Multiple plugins, as Opticks' interface intends for Spectral
-   message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-      if( (CMAKE_BUILD_TYPE STREQUAL "Release") OR (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo") )
-         set(Spectral_LIBRARIES ${CMAKE_BINARY_DIR}/LibPrivate/libSpectralUtilities.a)
-      else()
-         set(Spectral_LIBRARIES ${CMAKE_BINARY_DIR}/LibPrivate/libSpectralUtilitiesd.a)
-      endif()
-   message("OpenCv_LIBRARIES: ${OpenCv_LIBRARIES}")
+set(ONE_SPECTRAL_LIB ON) # We'll never want one spectral lib, it has many separate plugins
+if(1)# Multiple plugins, as Opticks' interface intends for Spectral
+   if( (CMAKE_BUILD_TYPE STREQUAL "Release") OR (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo") )
+      set(Spectral_LIBRARIES ${CMAKE_BINARY_DIR}/LibPrivate/libSpectralUtilities.a)
+   else()
+      set(Spectral_LIBRARIES ${CMAKE_BINARY_DIR}/LibPrivate/libSpectralUtilitiesd.a)
+   endif()
+
+   message(STATUS "OpenCv_LIBRARIES: ${OpenCv_LIBRARIES}")
+   message(STATUS "Spectral_LIBRARIES: ${Spectral_LIBRARIES}")
    foreach(LIB_NAME IN LISTS SPECTRAL_PLUGINS) # disable for tests
       set(PLUGIN_LIB_SOURCES "")
       set(PLUGIN_MOC_HEADERS "")
@@ -542,7 +564,7 @@ else() # Multiple plugins, as Opticks' interface intends for Spectral
       set(LIB_HEADERS "")
       set(LIB_MOC_HEADERS "")
       set(LIB_QRC_FILES "")
-      
+
       get_directory_property(LIB_SOURCES DIRECTORY ${LIB_NAME} DEFINITION SOURCE_FILES)
       foreach(SOURCE IN LISTS LIB_SOURCES)
          list(APPEND PLUGIN_LIB_SOURCES "${LIB_NAME}/${SOURCE}")
@@ -572,6 +594,7 @@ else() # Multiple plugins, as Opticks' interface intends for Spectral
       set_target_properties(${LIB_NAME} PROPERTIES PREFIX "")
       target_link_libraries(${LIB_NAME}
          ${Opticks_LIBRARIES}
+         SpectralUtilities
          ${Spectral_LIBRARIES}
          ${QT_LIBRARIES}
          ${tiff_LIBRARIES}
@@ -587,106 +610,24 @@ else() # Multiple plugins, as Opticks' interface intends for Spectral
       install(TARGETS ${SPECTRAL_PLUGINS} RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/PlugIns" CONFIGURATIONS Release;RelWithDebInfo;MinSizeRel)
       install(TARGETS ${SPECTRAL_PLUGINS} RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/PlugIns/debug" CONFIGURATIONS Debug)
    else()
-      install(TARGETS ${SPECTRAL_PLUGINS} LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/PlugIns" CONFIGURATIONS Release;RelWithDebInfo;MinSizeRel)
-      install(TARGETS ${SPECTRAL_PLUGINS} LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/PlugIns/debug" CONFIGURATIONS Debug)
+      install(TARGETS ${SPECTRAL_PLUGINS} LIBRARY DESTINATION "PlugIns" CONFIGURATIONS Release;RelWithDebInfo;MinSizeRel)
+      install(TARGETS ${SPECTRAL_PLUGINS} LIBRARY DESTINATION "PlugIns/debug" CONFIGURATIONS Debug)
    endif()
 endif()
 
-
-
-
-# add_executable(Spectral WIN32 ${SOURCE_FILES} ${INTERFACE_HEADER_FILES}) # Spectral is a plugin, not an executable...
+# add_executable(Spectral WIN32 ${SOURCE_FILES} ${INTERFACE_HEADER_FILES}) # Spectral is a plugin, not an executable. How does WIN32 work?
 source_group(Interfaces FILES ${INTERFACE_HEADER_FILES})
-
-if(0)
-target_link_libraries(Spectral
-    ${Spectral_LIBRARIES}
-    ${QT_LIBRARIES}
-    ${OPENGL_LIBRARIES}
-    ${OpenCv_LIBRARIES}
-    ${ZLIB_LIBRARIES}    
-    ${Xerces_LIBRARIES}
-#    ${XQilla_LIBRARIES}
-#    ${Raptor_LIBRARIES}
-    ${Glew_LIBRARIES}
-    ${PTHREADS_LIBRARY}
-    )
- if(HAVE_QT5)
-    target_link_libraries(Spectral  ${Qwt5ForQt5_LIBRARY})
- else()
-    target_link_libraries(Spectral  ${Qwt5ForQt4_LIBRARY})
- endif()
-endif()
-# set_target_properties(Spectral PROPERTIES DEBUG_POSTFIX "d")
-# if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-#     set_target_properties(Spectral PROPERTIES OUTPUT_NAME "linuxSpectral")
-#     target_link_libraries(Spectral
-#         ${EXPAT_LIBRARIES} -ldl
-#    )
-# endif()
-#if(WIN32)
-#    target_link_libraries(Spectral
-#        ${QT_QTMAIN_LIBRARY}
-#    )
-#endif()
 
 if (EXISTS "CppTests" AND IS_DIRECTORY "CppTests")
    add_subdirectory(CppTests)
 endif()
+
+# What do these do?
 include(FeatureSummary)
 feature_summary(WHAT ALL)
-
-
-
-if(ONE_SPECTRAL_LIB)
-   # TODO not needed, remove later
-   install(TARGETS SpectralLib Spectral LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/PlugIns") # TODO bin -> lib or PlugInLib or something, see install(stuff) below
-endif()
 
 #mark variables as advanced that the finders should have marked
 mark_as_advanced(FORCE QT_QMAKE_EXECUTABLE)
 mark_as_advanced(FORCE Boost_LIB_DIAGNOSTIC_DEFINITIONS)
 
-#----- Done adding private libraries and Spectral executables -----
-#----- Adding install targets for other items -----
-#
-# TODO: Opticks stuff, update for Spectral
-# Need: (going by Code/SConstruct
-# 1. OPTICKSDEPENDENCIES (command line or environment, handled above, including BITS extension
-#    a. OPTICKSDEPENDENCIESINCLUDE=${OPTICKSDEPENDENCIES}/${BITS}/include
-#    b. OPTICKSDEPENDENCIESBIN=${OPTICKSDEPENDENCIES}/${BITS}/bin
-# DOES Spectral actually USE OPTICKSDEPENDENCIES? It does need ${OPTICKS_CODE_DIR} for some headers
-# 
-# 2. SPECTRALDEPENDENCIES
-# 3. BUILDDIR (from command line or environment, where Spectral is built) -> SPECTRALBUILDDIR
-#    a. OPTICKSLIBDIR ${OPTICKSBUILDDIR}/lib   (Where Opticks' CMake build put it's libopticks-hdfpluginlibd.a
-#                                              libopticks-nitfpluginlibd.a  libopticks-pluginlibd.a  libopticks-pluginutilitiesd.a,
-#                                              which isn't where SCons would put them but oh well.)
-#    b. OPTICKSPLUGINDIR ${OPTICKSBUILDDIR}/PlugIns (Where we will install our Spectral.so etc. results)
-# 4. OPTICKSBUILDDIR ${Opticks_CODE_DIR}/Build (default). CL or Env, but allow arbitrary out-of-source Opticks and Spectral build folders
-# 5. SDKMODE Opticks  build mode debug,release (CL, Env) or deduce from OPTICKSBUILDDIR if it has only one build mode, or default to MODE)
-# 6. MODE    Spectral build mode debug,release (CL, Env)
-if(0) # additional install stuff not needed for a PlugIn?
-install(DIRECTORY ${Spectral_SOURCE_DIR}/../Release/DefaultSettings
-   ${Spectral_SOURCE_DIR}/../Release/Extensions
-   ${Spectral_SOURCE_DIR}/../Release/SupportFiles
-   ${Spectral_SOURCE_DIR}/../Release/Templates  DESTINATION . FILES_MATCHING
-   PATTERN "*" PATTERN ".svn" EXCLUDE PATTERN "_svn" EXCLUDE)
-install(DIRECTORY ${Spectral_SOURCE_DIR}/Interfaces
-   ${Spectral_SOURCE_DIR}/PlugInLib
-   ${Spectral_SOURCE_DIR}/HdfPlugInLib ${Spectral_SOURCE_DIR}/NitfPlugInLib
-   ${Spectral_SOURCE_DIR}/SimpleApiLib DESTINATION include FILES_MATCHING
-   PATTERN "*.h" PATTERN ".svn" EXCLUDE PATTERN "_svn" EXCLUDE)
-install(DIRECTORY ${Spectral_SOURCE_DIR}/PlugInUtilities/Interfaces
-   ${Spectral_SOURCE_DIR}/PlugInUtilities/pthreads-wrapper DESTINATION
-   include/PlugInUtilities FILES_MATCHING PATTERN "*.h" PATTERN ".svn" EXCLUDE
-   PATTERN "_svn" EXCLUDE)
-install(DIRECTORY ${Spectral_SOURCE_DIR}/PlugIns/src/Aspam
-   ${Spectral_SOURCE_DIR}/PlugIns/src/PlugInSampler
-   ${Spectral_SOURCE_DIR}/PlugIns/src/PlugInSamplerHdf
-   ${Spectral_SOURCE_DIR}/PlugIns/src/PlugInSamplerQt
-   ${Spectral_SOURCE_DIR}/PlugIns/src/Tutorial DESTINATION examples/PlugIns/src
-   FILES_MATCHING PATTERN "*" PATTERN ".svn" EXCLUDE PATTERN "_svn" EXCLUDE)
-install(DIRECTORY ${Spectral_SOURCE_DIR}/cmake/Modules DESTINATION cmake FILES_MATCHING
-   PATTERN "*" PATTERN ".svn" EXCLUDE PATTERN "_svn" EXCLUDE)
-endif(0)
+#----- Done adding Spectral PlugIn libraries -----
