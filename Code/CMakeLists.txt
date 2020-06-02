@@ -24,8 +24,12 @@ if(CMAKE_MAJOR_VERSION GREATER 2)
   cmake_policy(SET CMP0048 NEW)
 endif()
 
-#project (Spectral VERSION ${Spectral_VERSION} DESCRIPTION "Spectral PlugIn for Opticks GIS") # VERSION must be dotted-decimal
-project (Spectral DESCRIPTION "Spectral ${Spectral_VERSION} PlugIn for Opticks GIS")
+if(CMAKE_MAJOR_VERSION GREATER 2)
+   #project (Spectral VERSION ${Spectral_VERSION} DESCRIPTION "Spectral PlugIn for Opticks GIS") # VERSION must be dotted-decimal
+   project(Spectral DESCRIPTION "Spectral ${Spectral_VERSION} PlugIn for Opticks GIS")
+else()
+   project(Spectral)
+endif()
 
 ############################################################
 # From https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling
