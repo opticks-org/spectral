@@ -172,8 +172,6 @@ if(NOT Spectral_FLAGS_SET)
     endif()
 endif()
 
-set(ONE_SPECTRAL_LIB FALSE)
-
 set(Spectral_INCLUDE_DIRS
    "${Spectral_SOURCE_DIR}/Include"
    "${Spectral_SOURCE_DIR}/SpectralUtilities"
@@ -204,16 +202,17 @@ configure_file(cmake/Templates/BuildRevision.h "${Spectral_SOURCE_DIR}/SpectralU
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 if(WIN32)
     configure_file(cmake/Templates/Spectral.vcxproj.user "${CMAKE_BINARY_DIR}")
-    configure_file(cmake/Templates/spectral.dep "${CMAKE_BINARY_DIR}/bin")
-    configure_file(cmake/Templates/spectral-debug.dep "${CMAKE_BINARY_DIR}/bin")
+    configure_file(cmake/Templates/spectral.dep          "${CMAKE_BINARY_DIR}/bin")
+    configure_file(cmake/Templates/spectral-debug.dep    "${CMAKE_BINARY_DIR}/bin")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    configure_file(cmake/Templates/spectral.dep "${CMAKE_BINARY_DIR}/bin")
+    configure_file(cmake/Templates/spectral-release.dep  "${CMAKE_BINARY_DIR}/bin")
 else()
-    configure_file(cmake/Templates/spectral-debug.dep "${CMAKE_BINARY_DIR}/bin/spectral.dep")
+   configure_file(cmake/Templates/spectral-debug.dep     "${CMAKE_BINARY_DIR}/bin")
+   configure_file(cmake/Templates/spectral-debug-sdk.dep "${CMAKE_BINARY_DIR}/bin")
 endif()
 install(FILES cmake/Templates/spectral-debug-sdk.dep DESTINATION bin CONFIGURATIONS Debug)
 install(FILES cmake/Templates/spectral-debug.dep DESTINATION bin CONFIGURATIONS Debug)
-install(FILES cmake/Templates/spectral.dep DESTINATION bin)
+install(FILES cmake/Templates/spectral-release.dep DESTINATION bin)
 
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/ApplicationUserSettings")
 
@@ -337,14 +336,6 @@ endif()
 
 add_definitions(-DAPPLICATION_XERCES)
 
-# TODO 6/2/2020 SpectralUtilities is only subdir that needs ONE_SPECTRAL_LIB FALSE
-# Cleanup all subdir CMakeLists.txt to not need ONE_SPECTRAL_LIB,
-# BUT make sure windows will be good with your choice -- Win32 always sets ONE_SPECTRAL_LIB FALSE
-set(ONE_SPECTRAL_LIB FALSE)
-add_subdirectory(SpectralUtilities)
-
-set(OLD_SHARED_LIBRARY_PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
-set(CMAKE_SHARED_LIBRARY_PREFIX "")
 set(SPECTRAL_PLUGINS # all subfolders that contain a ModuleManager.cpp or modulemanager.cpp
     Aster
     Cem
@@ -371,14 +362,25 @@ if(OpenCv_FOUND)
         WangBovik
         )
 endif()
-set(ONE_SPECTRAL_LIB TRUE) # We'll never want one spectral lib, it has many separate plugins. But for now our subdir CMakeLists.txt need it
+
+# First create libSpectralUtilities.a, needed by some of the other plugins:
+add_subdirectory(SpectralUtilities)
+
+# Then cause the leading "lib" prefix to not be prepended to our plugin LIB_NAME.so names
+set(OLD_SHARED_LIBRARY_PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
+
+# Nominclature aside, we'll never want one spectral lib, as it has many separate plugins. But for now our subdir
+# CMakeLists.txt need to have ONE_SPECTRAL_LIB TRUE, as setting ONE_SPECTRAL_LIB  FALSE will result in the plugin
+# libraries being written as .a archives in LibPrivate, which isn't what we want. The plugins must be public and
+# shared, so Opticks can load them at runtime from it's PlugIns folder.
+# FWIW, in Opticks Win32 sets ONE_OPTICKS_LIB FALSE; we'll deal with Windows later.
+set(ONE_SPECTRAL_LIB TRUE)
 foreach(LIB_NAME IN LISTS SPECTRAL_PLUGINS)
    add_subdirectory(${LIB_NAME})
 endforeach()
-set(CMAKE_SHARED_LIBRARY_PREFIX "${OLD_SHARED_LIBRARY_PREFIX}")
 
-set(ONE_SPECTRAL_LIB ON) # We'll never want one spectral lib, it has many separate plugins
-if(1)# Multiple plugins, as Opticks' interface intends for Spectral
+if(ONE_SPECTRAL_LIB) # Create the multiple plugins as loadable .so, as Opticks' plugin interface intends.
    message(STATUS "OpenCv_LIBRARIES: ${OpenCv_LIBRARIES}")
    foreach(LIB_NAME IN LISTS SPECTRAL_PLUGINS) # disable for tests
       set(PLUGIN_LIB_SOURCES "")
@@ -433,6 +435,8 @@ if(1)# Multiple plugins, as Opticks' interface intends for Spectral
       install(TARGETS ${SPECTRAL_PLUGINS} LIBRARY DESTINATION "PlugIns/debug" CONFIGURATIONS Debug)
    endif()
 endif()
+# restore the system SHARED_LIBRARY_PREFIX
+set(CMAKE_SHARED_LIBRARY_PREFIX "${OLD_SHARED_LIBRARY_PREFIX}")
 
 # add_executable(Spectral WIN32 ${SOURCE_FILES} ${INTERFACE_HEADER_FILES}) # Spectral is a plugin, not an executable. How does WIN32 work?
 source_group(Interfaces FILES ${INTERFACE_HEADER_FILES})
