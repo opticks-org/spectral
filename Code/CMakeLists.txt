@@ -257,6 +257,7 @@ find_package(Glew REQUIRED)
 find_package(tiff REQUIRED)
 find_package(geotiff REQUIRED)
 find_package(proj REQUIRED)
+find_package(TBB REQUIRED)
 
 set(XERCES_NAMESPACE_VERSION "${Xerces_VERSION_MAJOR}_${Xerces_VERSION_MINOR}")
 configure_file(cmake/Templates/XercesIncludes.h "${Spectral_SOURCE_DIR}/Include/")
@@ -333,6 +334,7 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 include_directories(${Glew_INCLUDE_DIRS})
 include_directories(${tiff_INCLUDE_DIRS})
 include_directories(${geotiff_INCLUDE_DIRS})
+include_directories(${TBB_INCLUDE_DIRS})
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     include_directories(${EXPAT_INCLUDE_DIRS}) # expat is an XML parser
@@ -428,6 +430,7 @@ if(ONE_SPECTRAL_LIB) # Create the multiple plugins as loadable .so, as Opticks' 
          ${ossim_LIBRARIES}
          ${Xerces_LIBRARIES}
          ${OpenCv_LIBRARIES}
+         ${TBB_LIBRARIES}
          ${pthreads_LIBRARIES}
          )
    endforeach()
