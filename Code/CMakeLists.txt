@@ -137,7 +137,7 @@ elseif(CMAKE_CXX_SIZEOF_DATA_PTR EQUAL 8)
    set(BITS "64")
 endif()
 set(SPECTRAL_DEP_PATH ${Spectral_DEPENDENCIES}/${BITS})
-set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}" ${SPECTRAL_DEP_PATH})
+set(CMAKE_PREFIX_PATH "${SPECTRAL_DEP_PATH}") # must be set to SPECTRAL_DEP_PATH exactly, otherwise system tbb will be found when SPECTRAL_DEP_PATH is desired
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 if(CMAKE_MAJOR_VERSION GREATER 2)
    message(VERBOSE "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
@@ -256,6 +256,7 @@ find_package(OpenGL REQUIRED)
 find_package(Glew REQUIRED)
 find_package(tiff REQUIRED)
 find_package(geotiff REQUIRED)
+find_package(Ossim REQUIRED) # Is ossim needed? Cem, Mnf, and Elm SConscripts mention it, but not in the code...
 find_package(proj REQUIRED)
 find_package(TBB REQUIRED)
 
@@ -334,6 +335,7 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 include_directories(${Glew_INCLUDE_DIRS})
 include_directories(${tiff_INCLUDE_DIRS})
 include_directories(${geotiff_INCLUDE_DIRS})
+include_directories(${Ossim_INCLUDE_DIRS})
 include_directories(${TBB_INCLUDE_DIRS})
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -427,7 +429,8 @@ if(ONE_SPECTRAL_LIB) # Create the multiple plugins as loadable .so, as Opticks' 
          ${QT_LIBRARIES}
          ${tiff_LIBRARIES}
          ${geotiff_LIBRARIES}
-         ${ossim_LIBRARIES}
+         ${Ossim_LIBRARIES}
+         ${proj_libraries}
          ${Xerces_LIBRARIES}
          ${OpenCv_LIBRARIES}
          ${TBB_LIBRARIES}
