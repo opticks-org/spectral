@@ -269,6 +269,7 @@ find_package(OpenCv COMPONENTS ImgProc Flann)
 if(OpenCv_FOUND)
    add_definitions(-DOpenCv_VERSION_MAJOR=${OpenCv_MAJOR_VERSION})
    include_directories(${OpenCv_INCLUDE_DIRS})
+   message(STATUS "OpenCv_LIBRARIES: ${OpenCv_LIBRARIES}")
 endif()
 
 set(OLD_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
@@ -378,19 +379,16 @@ add_subdirectory(SpectralUtilities)
 set(OLD_SHARED_LIBRARY_PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
-# Nominclature aside, we'll never want one spectral lib, as it has many separate plugins. But for now our subdir
-# CMakeLists.txt need to have ONE_SPECTRAL_LIB TRUE, as setting ONE_SPECTRAL_LIB  FALSE will result in the plugin
-# libraries being written as .a archives in LibPrivate, which isn't what we want. The plugins must be public and
-# shared, so Opticks can load them at runtime from it's PlugIns folder.
-# FWIW, in Opticks Win32 sets ONE_OPTICKS_LIB FALSE; we'll deal with Windows later.
-set(ONE_SPECTRAL_LIB TRUE)
+# For now our subdir CMakeLists.txt need to have CODEDIR_PLUGIN_BUILD TRUE. Setting CODEDIR_PLUGIN_BUILD FALSE will
+# result in the plugin libraries being written, but without their requisite target_link_libraries(LIB_NAME...),
+# If that changes, all we'll need below (after the add_subdirectory loop) are the final install(TARGETS...) commands.
+set(CODEDIR_PLUGIN_BUILD TRUE)
 foreach(LIB_NAME IN LISTS SPECTRAL_PLUGINS)
    add_subdirectory(${LIB_NAME})
 endforeach()
 
-if(ONE_SPECTRAL_LIB) # Create the multiple plugins as loadable .so, as Opticks' plugin interface intends.
-   message(STATUS "OpenCv_LIBRARIES: ${OpenCv_LIBRARIES}")
-   foreach(LIB_NAME IN LISTS SPECTRAL_PLUGINS) # disable for tests
+if(CODEDIR_PLUGIN_BUILD) # Create the multiple plugins here, rather than in the subdir CMakeLists.txt
+   foreach(LIB_NAME IN LISTS SPECTRAL_PLUGINS)
       set(PLUGIN_LIB_SOURCES "")
       set(PLUGIN_MOC_HEADERS "")
       set(PLUGIN_QRC_FILES "")
