@@ -11,9 +11,17 @@ set(SOURCE_FILES
    CommonSignatureMetadataKeys.cpp
    SpectralSignatureSelector.cpp
    SpectralUtilities.cpp
-)
-if(ONE_OPTICKS_LIB)
-    set_property(DIRECTORY PROPERTY ALL_SOURCES ${SOURCE_FILES} ${HEADER_FILES})
-else()
-    add_library(SpectralUtilities STATIC ${SOURCE_FILES} ${HEADER_FILES})
-endif()
+   )
+set(MOC_HEADERS
+   BuildRevision.h
+   CommonPlugInArgs.h
+   CommonSignatureMetadataKeys.h
+   SpectralContextMenuActions.h
+   SpectralSignatureSelector.h
+   SpectralUtilities.h
+   )
+
+qt4_wrap_cpp(MOC_OUTFILES ${MOC_HEADERS})
+source_group(moc FILES ${MOC_OUTFILES})
+set_property(DIRECTORY PROPERTY ALL_SOURCES ${SOURCE_FILES} ${HEADER_FILES} ${MOC_OUTFILES})
+add_library(SpectralUtilities SHARED ${SOURCE_FILES} ${HEADER_FILES} ${MOC_HEADERS} ${MOC_OUTFILES})
