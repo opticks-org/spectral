@@ -428,7 +428,7 @@ if(CODEDIR_PLUGIN_BUILD) # Create the multiple plugins here, rather than in the 
          ${tiff_LIBRARIES}
          ${geotiff_LIBRARIES}
          ${Ossim_LIBRARIES}
-         ${proj_libraries}
+         ${proj_LIBRARIES}
          ${Xerces_LIBRARIES}
          ${OpenCv_LIBRARIES}
          ${TBB_LIBRARIES}
