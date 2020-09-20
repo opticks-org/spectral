@@ -14,12 +14,12 @@
 #include "SpectralLibraryMatchOptions.h"
 #include "StringUtilities.h"
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QComboBox>
-#include <QtGui/QDoubleSpinBox>
-#include <QtGui/QGridLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QSpinBox>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QDoubleSpinBox>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QSpinBox>
 
 REGISTER_PLUGIN(SpectralSpectralLibraryMatch, SpectralLibraryMatchOptions,
                 OptionQWidgetWrapper<SpectralLibraryMatchOptions>);

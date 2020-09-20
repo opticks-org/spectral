@@ -13,7 +13,7 @@
 #include "ConfigurationSettings.h"
 #include "SpectralVersion.h"
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 #include <string>
 #include <utility>

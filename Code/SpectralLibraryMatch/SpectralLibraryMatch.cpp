@@ -25,6 +25,7 @@
 #include "SpatialDataView.h"
 #include "SpectralLibraryMatch.h"
 #include "SpectralLibraryMatchOptions.h"
+#include "SpectralLibraryMatchMetrics.h"
 #include "StringUtilities.h"
 #include "StringUtilitiesMacros.h"
 #include "Units.h"

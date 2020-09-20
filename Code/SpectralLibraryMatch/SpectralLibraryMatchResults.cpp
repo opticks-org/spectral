@@ -37,14 +37,14 @@
 #include "Units.h"
 #include "Wavelengths.h"
 
-#include <QtGui/QAction>
-#include <QtGui/QDockWidget>
-#include <QtGui/QInputDialog>
-#include <QtGui/QMainWindow>
-#include <QtGui/QMenu>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QInputDialog>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
 #include <QtGui/QPixmap>
-#include <QtGui/QTabWidget>
-#include <QtGui/QWidget>
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QWidget>
 
 REGISTER_PLUGIN_BASIC(SpectralSpectralLibraryMatch, SpectralLibraryMatchResults);
 

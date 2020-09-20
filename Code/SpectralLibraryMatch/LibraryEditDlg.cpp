@@ -19,12 +19,12 @@
 #include <QtCore/QListIterator>
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QGridLayout>
-#include <QtGui/QHeaderView>
-#include <QtGui/QPushButton>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QTreeWidgetItem>
+#include <QtWidgets/QDialogButtonBox>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QHeaderView>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QTreeWidgetItem>
 
 LibraryEditDlg::LibraryEditDlg(const std::vector<Signature*>& signatures, QWidget* pParent) :
    mpTree(NULL),

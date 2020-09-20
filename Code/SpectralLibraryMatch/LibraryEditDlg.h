@@ -10,17 +10,16 @@
 #ifndef LIBRARYEDITDLG_H
 #define LIBRARYEDITDLG_H
 
-#include "SpectralLibraryMatch.h"
+#include "Signature.h"
 
 #include <boost/any.hpp>
 #include <string>
 #include <vector>
 
 #include <QtCore/QMetaType>
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 class QTreeWidget;
-class Signature;
 class Subject;
 
 Q_DECLARE_METATYPE(Signature*)

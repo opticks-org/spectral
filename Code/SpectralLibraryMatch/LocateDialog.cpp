@@ -7,6 +7,7 @@
  * http://www.gnu.org/licenses/lgpl.html
  */
 
+#include "SpectralLibraryMatchOptions.h"
 #include "AoiElement.h"
 #include "DesktopServices.h"
 #include "Layer.h"
@@ -20,14 +21,14 @@
 #include "Window.h"
 
 #include <QtCore/QStringList>
-#include <QtGui/QCheckBox>
-#include <QtGui/QComboBox>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QDoubleSpinBox>
-#include <QtGui/QFrame>
-#include <QtGui/QGridLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QDialogButtonBox>
+#include <QtWidgets/QDoubleSpinBox>
+#include <QtWidgets/QFrame>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 
 LocateDialog::LocateDialog(const RasterElement* pRaster, QWidget* pParent) :
    QDialog(pParent, Qt::WindowCloseButtonHint),

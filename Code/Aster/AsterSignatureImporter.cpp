@@ -31,7 +31,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QTextStream>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QFileDialog>
 
 // This importer when written loads all of the signatures from
 // the ASTER Spectral Library v2.0 found at:

@@ -8,8 +8,8 @@
  */
 
 #include <QtCore/QFile>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
 
 #include "ElmFile.h"
 #include "MessageLogResource.h"

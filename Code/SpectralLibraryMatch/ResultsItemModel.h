@@ -12,6 +12,7 @@
 
 #include "ColorType.h"
 #include "SpectralLibraryMatch.h"
+#include "Signature.h"
 
 #include <QtCore/QAbstractItemModel>
 #include <QtCore/QMetaType>

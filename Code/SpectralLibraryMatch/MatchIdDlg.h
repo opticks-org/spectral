@@ -16,7 +16,7 @@
 #include <string>
 
 #include <QtCore/QString>
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 class AoiElement;
 class QCheckBox;

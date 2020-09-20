@@ -7,11 +7,11 @@
  * http://www.gnu.org/licenses/lgpl.html
  */
 
-#include <QtGui/QApplication>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLayout>
 #include <QtGui/QMouseEvent>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QPushButton>
 
 #include <qwt_plot_canvas.h>
 #include <qwt_plot_grid.h>
@@ -46,7 +46,7 @@ EigenPlotDlg::EigenPlotDlg(QWidget* parent) :
    QwtScaleEngine* pLinearScale = mpPlot->axisScaleEngine(QwtPlot::xBottom);
    pLinearScale->setAttribute(QwtScaleEngine::Floating);
 
-   QwtLog10ScaleEngine* pLogScale = new QwtLog10ScaleEngine();
+   QwtLogScaleEngine* pLogScale = new QwtLogScaleEngine();
    pLogScale->setAttribute(QwtScaleEngine::Floating);
    mpPlot->setAxisScaleEngine(QwtPlot::yLeft, pLogScale);
 
@@ -54,11 +54,11 @@ EigenPlotDlg::EigenPlotDlg(QWidget* parent) :
    plotPalette.setColor(QPalette::Window, Qt::white);
    mpPlot->setPalette(plotPalette);
 
-   QwtPlotCanvas* pPlotCanvas = mpPlot->canvas();
-   pPlotCanvas->setFrameStyle(QFrame::NoFrame);
+   QWidget* pPlotCanvas = mpPlot->canvas();
+   // pPlotCanvas->setFrameStyle(QFrame::NoFrame);
 
    QwtPlotLayout* pPlotLayout = mpPlot->plotLayout();
-   pPlotLayout->setMargin(5);
+   pPlotLayout->setCanvasMargin(5);
 
    QwtPlotGrid* pPlotGrid = new QwtPlotGrid();
    pPlotGrid->setPen(QPen(Qt::DotLine));
@@ -152,7 +152,7 @@ bool EigenPlotDlg::setEigenValues(double* yVals, int numVals)
 
    mpCurve = new QwtPlotCurve("SNR Value Plot");
    mpCurve->setPen(QPen(Qt::black));
-   mpCurve->setData(xVals, yVals, numVals);
+   mpCurve->setSamples(xVals, yVals, numVals);
    mpCurve->attach(mpPlot);
 
    mpPlot->replot();
@@ -177,8 +177,8 @@ bool EigenPlotDlg::eventFilter(QObject* pObject, QEvent* pEvent)
 
                // Get the component number and SNR value
                int iIndex = mpCurve->closestPoint(ptMouse);
-               int iComponentValue = static_cast<int>(mpCurve->x(iIndex));
-               double dEigenValue = mpCurve->y(iIndex);
+               int iComponentValue = static_cast<int>(mpCurve->sample(iIndex).x());
+               double dEigenValue = mpCurve->sample(iIndex).y();
 
                // Update the plot axis title
                QString strTitle;

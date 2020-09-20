@@ -20,10 +20,8 @@ set (UI_FILES
 
 qt4_wrap_ui(UI_OUTFILES ${UI_FILES})
 
-if(Qt_VERSION_MAJOR EQUAL 4)
-   execute_process(COMMAND ${QT_UIC_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/RxDialog.ui -o  ${CMAKE_CURRENT_SOURCE_DIR}/ui_RxDialog.h)
-endif()
-# Otherwise Qt5 QT_AUTOMOC should handle this
+execute_process(COMMAND ${QT_UIC_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/RxDialog.ui -o  ${CMAKE_CURRENT_SOURCE_DIR}/ui_RxDialog.h)
+# Otherwise Qt5 QT_AUTOUIC should handle this
 
 if(CODEDIR_PLUGIN_BUILD)
    set_property(DIRECTORY PROPERTY ALL_SOURCES ${SOURCE_FILES} ${HEADER_FILES} ${UI_FILES})

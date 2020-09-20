@@ -140,7 +140,7 @@ set(SPECTRAL_DEP_PATH ${Spectral_DEPENDENCIES}/${BITS})
 set(CMAKE_PREFIX_PATH "${SPECTRAL_DEP_PATH}") # must be set to SPECTRAL_DEP_PATH exactly, otherwise system tbb will be found when SPECTRAL_DEP_PATH is desired
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 if(CMAKE_MAJOR_VERSION GREATER 2)
-   message(VERBOSE "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+   message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 endif()
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG DEBUG) #-DDEBUG only for debug configurations
@@ -246,7 +246,7 @@ set(OpenGL_GL_PREFERENCE GLVND)
 
 # Qt/Qwt boilerplate is in a separate file to share with Opticks
 set(DEPENDENCY_PATH ${SPECTRAL_DEP_PATH})
-include(ConfigureQtQwt)
+include(ConfigureQt5Qwt6)
 unset(DEPENDENCY_PATH)
 
 find_package(Boost 1.45.0 REQUIRED)
@@ -383,6 +383,7 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 # result in the plugin libraries being written, but without their requisite target_link_libraries(LIB_NAME...),
 # If that changes, all we'll need below (after the add_subdirectory loop) are the final install(TARGETS...) commands.
 set(CODEDIR_PLUGIN_BUILD TRUE)
+#set(CODEDIR_PLUGIN_BUILD FALSE)
 foreach(LIB_NAME IN LISTS SPECTRAL_PLUGINS)
    add_subdirectory(${LIB_NAME})
 endforeach()
@@ -418,6 +419,13 @@ if(CODEDIR_PLUGIN_BUILD) # Create the multiple plugins here, rather than in the 
       endforeach()
       qt4_add_resources(PLUGIN_QRC_OUTFILES ${PLUGIN_QRC_FILES})
       list(APPEND PLUGIN_LIB_SOURCES ${PLUGIN_QRC_OUTFILES} ${PLUGIN_QRC_FILES})
+
+      get_directory_property(LIB_UI_FILES DIRECTORY ${LIB_NAME} DEFINITION UI_FILES)
+      foreach(SOURCE IN LISTS LIB_UI_FILES)
+         list(APPEND PLUGIN_UI_FILES "${LIB_NAME}/${SOURCE}")
+      endforeach()
+      qt4_wrap_ui(PLUGIN_UI_OUTFILES ${PLUGIN_UI_FILES})
+      list(APPEND PLUGIN_LIB_SOURCES ${PLUGIN_UI_OUTFILES})
 
       add_library(${LIB_NAME} SHARED ${PLUGIN_LIB_SOURCES} )
       set_target_properties(${LIB_NAME} PROPERTIES PREFIX "")

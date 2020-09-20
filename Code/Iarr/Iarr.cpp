@@ -10,7 +10,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QString>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 
 #include "AoiElement.h"
 #include "AppVerify.h"

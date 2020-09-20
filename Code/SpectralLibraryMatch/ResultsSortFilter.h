@@ -13,7 +13,7 @@
 #include "Location.h"
 
 #include <QtCore/QVariant>
-#include <QtGui/QSortFilterProxyModel>
+#include <QtCore/QSortFilterProxyModel>
 
 class QModelIndex;
 class QString;

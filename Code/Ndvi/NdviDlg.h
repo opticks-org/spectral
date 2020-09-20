@@ -10,9 +10,9 @@
 #ifndef NDVIDLG_H
 #define NDVIDLG_H
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QDialog>
-#include <QtGui/QTableWidget>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QTableWidget>
 
 class DimensionDescriptor;
 class RasterDataDescriptor;

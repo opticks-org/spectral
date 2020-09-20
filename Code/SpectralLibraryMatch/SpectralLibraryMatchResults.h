@@ -10,10 +10,10 @@
 #ifndef SPECTRALLIBRARYMATCHRESULTS_H
 #define SPECTRALLIBRARYMATCHRESULTS_H
 
+#include "SpectralLibraryMatch.h"
 #include "AttachmentPtr.h"
 #include "DockWindowShell.h"
 #include "SessionExplorer.h"
-#include "SpectralLibraryMatch.h"
 
 #include <boost/any.hpp>
 #include <map>

@@ -40,7 +40,7 @@
 #include "SpectralVersion.h"
 #include "ThresholdLayer.h"
 #include "UtilityServices.h"
-#include <QtCore/QtConcurrentMap>
+#include <QtConcurrent/QtConcurrentMap>
 
 REGISTER_PLUGIN_BASIC(TadModule, Tad);
 

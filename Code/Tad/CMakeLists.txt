@@ -19,10 +19,11 @@ set (UI_FILES
    )
 qt4_wrap_ui(UI_OUTFILES ${UI_FILES})
 
-if(Qt_VERSION_MAJOR EQUAL 4)
+#if(Qt_VERSION_MAJOR EQUAL 4)
+   message(STATUS "${QT_UIC_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/TadDialog.ui")
    execute_process(COMMAND ${QT_UIC_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/TadDialog.ui -o  ${CMAKE_CURRENT_SOURCE_DIR}/ui_TadDialog.h)
-endif()
-# Otherwise Qt5 QT_AUTOMOC should handle this
+#endif()
+# Otherwise Qt5 QT_AUTOUIC should handle this
 
 
 if(CODEDIR_PLUGIN_BUILD)
@@ -31,5 +32,5 @@ if(CODEDIR_PLUGIN_BUILD)
 else()
    qt4_wrap_cpp(MOC_OUTFILES ${MOC_HEADERS})
    source_group(moc FILES ${MOC_OUTFILES})
-   add_library(Tad SHARED ${SOURCE_FILES} ${HEADER_FILES} ${MOC_HEADERS} ${MOC_OUTFILES})
+   add_library(Tad SHARED ${SOURCE_FILES} ${HEADER_FILES} ${MOC_HEADERS} ${MOC_OUTFILES} ${UI_FILES})
 endif()

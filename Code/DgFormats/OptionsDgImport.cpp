@@ -12,9 +12,9 @@
 #include "OptionQWidgetWrapper.h"
 #include "PlugInRegistration.h"
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QLabel>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QVBoxLayout>
 
 REGISTER_PLUGIN(SpectralDgFormats, OptionsWV2Import, OptionQWidgetWrapper<OptionsWV2Import>());
 REGISTER_PLUGIN(SpectralDgFormats, OptionsQB2Import, OptionQWidgetWrapper<OptionsQB2Import>());

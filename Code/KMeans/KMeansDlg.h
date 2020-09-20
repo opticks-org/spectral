@@ -10,7 +10,7 @@
 #ifndef KMEANSDLG_H
 #define KMEANSDLG_H
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 class QCheckBox;
 class QDoubleSpinBox;

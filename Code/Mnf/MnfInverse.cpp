@@ -35,7 +35,7 @@
 #include "Units.h"
 
 #include <QtCore/QString>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QFileDialog>
 
 #include <list>
 #include <vector>

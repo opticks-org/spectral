@@ -9,6 +9,7 @@ set (HEADER_FILES
    SpectralLibraryManager.h
    SpectralLibraryMatch.h
    SpectralLibraryMatchId.h
+   SpectralLibraryMatchMetrics.h
    SpectralLibraryMatchOptions.h
    SpectralLibraryMatchResults.h
    SpectralLibraryMatchTools.h
@@ -40,7 +41,6 @@ set (MOC_HEADERS
    ResultsPage.h
    ResultsSortFilter.h
    SpectralLibraryManager.h
-   SpectralLibraryMatch.h
    SpectralLibraryMatchId.h
    SpectralLibraryMatchOptions.h
    SpectralLibraryMatchResults.h

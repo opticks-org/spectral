@@ -10,13 +10,15 @@
 #ifndef RESAMPLERPLUGINDLG_H
 #define RESAMPLERPLUGINDLG_H
 
+#include "DataElement.h"
+#include "Signature.h"
+
 #include <QtCore/QMetaType>
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 #include <string>
 #include <vector>
 
-class DataElement;
 class FileBrowser;
 class QCheckBox;
 class QComboBox;
@@ -24,7 +26,6 @@ class QDoubleSpinBox;
 class QRadioButton;
 class QString;
 class QTreeWidget;
-class Signature;
 
 Q_DECLARE_METATYPE(DataElement*)
 Q_DECLARE_METATYPE(Signature*)
