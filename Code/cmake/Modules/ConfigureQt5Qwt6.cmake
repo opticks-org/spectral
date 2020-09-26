@@ -41,37 +41,16 @@ if(EXISTS ${QT_QMAKE_EXECUTABLE})
    if(IS_DIRECTORY ${Qt5_DIR})
       message(STATUS "Found Qt5_DIR: ${Qt5_DIR}")
    else()
-      message(WARNING  " ${Qt5_DIR} NOT X2FOUND")
+      message(WARNING  " ${Qt5_DIR} NOT FOUND")
    endif()
-   # TODO: Determine if CMAKE_AUTOMOC etc may be used instead of qt5_wrap_cpp() etc. macros below.
-   #       Might simplify things a bit if they can.
-   #       See https://cmake.org/cmake/help/v3.12/prop_tgt/AUTOMOC.html#prop_tgt:AUTOMOC
    set(CMAKE_INCLUDE_CURRENT_DIR ON)
-   # set(CMAKE_AUTOMOC ON)
-   # set(CMAKE_AUTORCC ON)
+   set(CMAKE_AUTOMOC ON)
+   set(CMAKE_AUTORCC ON)
    set(CMAKE_AUTOUIC ON)
 else()
    message(WARNING " QT_QMAKE_EXECUTABLE ${QT_QMAKE_EXECUTABLE} does not exist")
 endif()
 add_definitions(-DHAVE_QSAVEFILE=${HAVE_QSAVEFILE})
-
-# We include(${QT_USE_FILE}) throughout for Qt4. Qt5 doesn't use it. Check if
-# QT_USE_FILE is empty, and set it to a dummy file if it is.
-if(NOT QT_USE_FILE)
-   set(QT_USE_FILE QtDummy)
-endif()
-
-# Redefine some qt4 macros for qt5. These are used extensively throughout our CMake tree, Perhaps
-# they can be eliminated in favor of CMAKE_AUTOMOC, CMAKE_AUTORCC, CMAKE_AUTOUIC instead?
-macro(qt4_wrap_cpp)
-   qt5_wrap_cpp(${ARGV})
-endmacro()
-macro(qt4_wrap_ui)
-   qt5_wrap_ui(${ARGV})
-endmacro()
-macro(qt4_add_resources)
-   qt5_add_resources(${ARGV})
-endmacro()
 
 find_package(Qt5 COMPONENTS Core Concurrent Gui Widgets OpenGL Xml Network PrintSupport REQUIRED)
 set(Qt_VERSION_MAJOR ${Qt5_VERSION_MAJOR})

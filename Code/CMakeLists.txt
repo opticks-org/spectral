@@ -383,7 +383,6 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 # result in the plugin libraries being written, but without their requisite target_link_libraries(LIB_NAME...),
 # If that changes, all we'll need below (after the add_subdirectory loop) are the final install(TARGETS...) commands.
 set(CODEDIR_PLUGIN_BUILD TRUE)
-#set(CODEDIR_PLUGIN_BUILD FALSE)
 foreach(LIB_NAME IN LISTS SPECTRAL_PLUGINS)
    add_subdirectory(${LIB_NAME})
 endforeach()
@@ -401,31 +400,11 @@ if(CODEDIR_PLUGIN_BUILD) # Create the multiple plugins here, rather than in the 
       set(LIB_MOC_HEADERS "")
       set(LIB_QRC_FILES "")
 
-      get_directory_property(LIB_SOURCES DIRECTORY ${LIB_NAME} DEFINITION SOURCE_FILES)
+      get_directory_property(LIB_SOURCES DIRECTORY ${LIB_NAME} DEFINITION ALL_SOURCES)
+
       foreach(SOURCE IN LISTS LIB_SOURCES)
          list(APPEND PLUGIN_LIB_SOURCES "${LIB_NAME}/${SOURCE}")
       endforeach()
-
-      get_directory_property(LIB_MOC_HEADERS DIRECTORY ${LIB_NAME} DEFINITION MOC_HEADERS)
-      foreach(SOURCE IN LISTS LIB_MOC_HEADERS)
-         list(APPEND PLUGIN_MOC_HEADERS "${LIB_NAME}/${SOURCE}")
-      endforeach()
-      qt4_wrap_cpp(PLUGIN_MOC_OUTFILES ${PLUGIN_MOC_HEADERS})
-      list(APPEND PLUGIN_LIB_SOURCES ${PLUGIN_MOC_OUTFILES} ${PLUGIN_MOC_HEADERS})
-
-      get_directory_property(LIB_QRC_FILES DIRECTORY ${LIB_NAME} DEFINITION QRC_FILES)
-      foreach(SOURCE IN LISTS LIB_QRC_FILES)
-         list(APPEND PLUGIN_QRC_FILES "${LIB_NAME}/${SOURCE}")
-      endforeach()
-      qt4_add_resources(PLUGIN_QRC_OUTFILES ${PLUGIN_QRC_FILES})
-      list(APPEND PLUGIN_LIB_SOURCES ${PLUGIN_QRC_OUTFILES} ${PLUGIN_QRC_FILES})
-
-      get_directory_property(LIB_UI_FILES DIRECTORY ${LIB_NAME} DEFINITION UI_FILES)
-      foreach(SOURCE IN LISTS LIB_UI_FILES)
-         list(APPEND PLUGIN_UI_FILES "${LIB_NAME}/${SOURCE}")
-      endforeach()
-      qt4_wrap_ui(PLUGIN_UI_OUTFILES ${PLUGIN_UI_FILES})
-      list(APPEND PLUGIN_LIB_SOURCES ${PLUGIN_UI_OUTFILES})
 
       add_library(${LIB_NAME} SHARED ${PLUGIN_LIB_SOURCES} )
       set_target_properties(${LIB_NAME} PROPERTIES PREFIX "")
@@ -443,6 +422,7 @@ if(CODEDIR_PLUGIN_BUILD) # Create the multiple plugins here, rather than in the 
          ${pthreads_LIBRARIES}
          )
    endforeach()
+   
    if(WIN32)
       install(TARGETS ${SPECTRAL_PLUGINS} RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/PlugIns" CONFIGURATIONS Release;RelWithDebInfo;MinSizeRel)
       install(TARGETS ${SPECTRAL_PLUGINS} RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/PlugIns/debug" CONFIGURATIONS Debug)

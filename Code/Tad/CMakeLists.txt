@@ -9,28 +9,12 @@ set (SOURCE_FILES
    Tad.cpp
    )
 
-set (MOC_HEADERS
-   TadDialog.h
-   Tad.h
-   )
-
 set (UI_FILES
    TadDialog.ui
    )
-qt4_wrap_ui(UI_OUTFILES ${UI_FILES})
 
-#if(Qt_VERSION_MAJOR EQUAL 4)
-   message(STATUS "${QT_UIC_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/TadDialog.ui")
-   execute_process(COMMAND ${QT_UIC_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/TadDialog.ui -o  ${CMAKE_CURRENT_SOURCE_DIR}/ui_TadDialog.h)
-#endif()
-# Otherwise Qt5 QT_AUTOUIC should handle this
+set(ALL_SOURCES ${SOURCE_FILES} ${HEADER_FILES} ${UI_FILES})
 
-
-if(CODEDIR_PLUGIN_BUILD)
-   set_property(DIRECTORY PROPERTY ALL_SOURCES ${SOURCE_FILES} ${HEADER_FILES} ${UI_FILES})
-   set_property(DIRECTORY PROPERTY MOC_HEADERS ${MOC_HEADERS})
-else()
-   qt4_wrap_cpp(MOC_OUTFILES ${MOC_HEADERS})
-   source_group(moc FILES ${MOC_OUTFILES})
+if(NOT CODEDIR_PLUGIN_BUILD)
    add_library(Tad SHARED ${SOURCE_FILES} ${HEADER_FILES} ${MOC_HEADERS} ${MOC_OUTFILES} ${UI_FILES})
 endif()
