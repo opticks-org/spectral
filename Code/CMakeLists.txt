@@ -1,5 +1,5 @@
 set(Spectral_VERSION "1.9.0rc1Unofficial") # Change project(Spectral) call below when VERSION becomes an official dotted-decimal
-cmake_minimum_required (VERSION 2.8.3)
+cmake_minimum_required (VERSION 3.11.1)
 
 # Order is important on this. It MUST be before project()
 if(DEFINED CMAKE_BUILD_TYPE)
