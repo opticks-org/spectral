@@ -328,7 +328,6 @@ include_directories(${Spectral_INCLUDE_DIRS})
 
 #############################################################
 
-include(${QT_USE_FILE})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${Xerces_INCLUDE_DIRS})
 include_directories(${ZLIB_INCLUDE_DIRS})
