@@ -16,7 +16,7 @@
 #include <vector>
 
 #include <QtCore/QMetaType>
-#include <QtGui/QTreeView>
+#include <QtWidgets/QTreeView>
 
 class ColorType;
 class Progress;

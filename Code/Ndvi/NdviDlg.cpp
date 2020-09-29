@@ -17,11 +17,11 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QGridLayout>
-#include <QtGui/QHeaderView>
-#include <QtGui/QLabel>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QDialogButtonBox>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QMessageBox>
 
 NdviDlg::NdviDlg(const RasterDataDescriptor* pDataDescriptor, const double redBandLow, const double redBandHigh,
    const double nirBandLow, const double nirBandHigh, DimensionDescriptor redBandDD, DimensionDescriptor nirBandDD,

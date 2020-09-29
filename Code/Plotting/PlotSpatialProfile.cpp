@@ -26,7 +26,7 @@
 #include "RasterUtilities.h"
 #include "SpatialDataView.h"
 #include "SpectralVersion.h"
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 
 REGISTER_PLUGIN_BASIC(SpectralPlotting, PlotSpatialProfile);
 

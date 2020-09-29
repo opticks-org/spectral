@@ -10,7 +10,7 @@
 #ifndef IARRDLG_H
 #define IARRDLG_H
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 #include "TypesFile.h"
 

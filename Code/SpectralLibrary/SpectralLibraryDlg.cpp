@@ -9,15 +9,15 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <QtGui/QBitmap>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QFrame>
-#include <QtGui/QHeaderView>
-#include <QtGui/QInputDialog>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QDialogButtonBox>
+#include <QtWidgets/QFrame>
+#include <QtWidgets/QHeaderView>
+#include <QtWidgets/QInputDialog>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QMessageBox>
 
 #include "AppVerify.h"
 #include "ConfigurationSettings.h"

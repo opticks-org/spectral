@@ -23,9 +23,9 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtGui/QBrush>
-#include <QtGui/QHeaderView>
+#include <QtWidgets/QHeaderView>
 #include <QtGui/QIcon>
-#include <QtGui/QItemSelectionModel>
+#include <QtCore/QItemSelectionModel>
 #include <QtGui/QPainter>
 #include <QtGui/QPen>
 #include <QtGui/QPixmap>
@@ -56,7 +56,7 @@ ResultsPage::ResultsPage(QWidget* pParent) :
    {
       pHeader->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
       pHeader->resizeSection(0, 250);
-      pHeader->setMovable(false);
+      pHeader->setSectionsMovable(false);
       pHeader->setSortIndicator(0, Qt::AscendingOrder);
       pHeader->setSortIndicatorShown(false);
    }

@@ -15,7 +15,6 @@
 #include "AlgorithmShell.h"
 #include "TypesFile.h"
 
-#include <opencv/cv.h>
 #include <QtCore/QList>
 #include <QtCore/QPair>
 

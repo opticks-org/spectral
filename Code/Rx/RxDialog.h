@@ -10,9 +10,8 @@
 #ifndef RXDIALOG_H__
 #define RXDIALOG_H__
 
-#include "ConfigurationSettings.h"
 #include "ui_RxDialog.h"
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 class RxDialog : public QDialog, private Ui_RxDialog
 {

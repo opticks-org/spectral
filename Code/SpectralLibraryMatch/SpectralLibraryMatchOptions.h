@@ -10,9 +10,9 @@
 #ifndef SPECTRALLIBRARYMATCHOPTIONS_H
 #define SPECTRALLIBRARYMATCHOPTIONS_H
 
+#include "SpectralLibraryMatch.h"
 #include "ConfigurationSettings.h"
 #include "LabeledSectionGroup.h"
-#include "SpectralLibraryMatch.h"
 #include "SpectralVersion.h"
 #include "TypesFile.h"
 

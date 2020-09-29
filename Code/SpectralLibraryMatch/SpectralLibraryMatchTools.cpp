@@ -51,7 +51,7 @@
 #include <vector>
 
 #include <QtCore/QEvent>
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 #include <QtGui/QPixmap>
 #include <QtGui/QMouseEvent>
 

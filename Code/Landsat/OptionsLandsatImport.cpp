@@ -12,9 +12,9 @@
 #include "OptionQWidgetWrapper.h"
 #include "PlugInRegistration.h"
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QLabel>
-#include <QtGui/QVBoxLayout>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QVBoxLayout>
 
 REGISTER_PLUGIN(SpectralLandsat, OptionsLandsatImport, OptionQWidgetWrapper<OptionsLandsatImport>());
 

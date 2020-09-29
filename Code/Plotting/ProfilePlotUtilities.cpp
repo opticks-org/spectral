@@ -32,7 +32,7 @@
 #include "xmlreader.h"
 #include "xmlwriter.h"
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 using XERCES_CPP_NAMESPACE_QUALIFIER DOMNode;
 using XERCES_CPP_NAMESPACE_QUALIFIER DOMElement;

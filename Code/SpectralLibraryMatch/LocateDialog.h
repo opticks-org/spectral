@@ -10,20 +10,18 @@
 #ifndef LOCATEDIALOG_H
 #define LOCATEDIALOG_H
 
-#include "SpectralLibraryMatch.h"
-#include "SpectralLibraryMatchOptions.h"
-
 #include <map>
 #include <string>
 
 #include <QtCore/QString>
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 class AoiElement;
 class QCheckBox;
 class QComboBox;
 class QLineEdit;
 class QDoubleSpinBox;
+#include "SpectralLibraryMatch.h"
 
 class LocateDialog : public QDialog
 {

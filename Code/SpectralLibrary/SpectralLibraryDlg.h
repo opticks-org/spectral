@@ -11,9 +11,9 @@
 #define SPECTRALLIBRARYDLG_H
 
 #include <QtCore/QStringList>
-#include <QtGui/QDialog>
-#include <QtGui/QPushButton>
-#include <QtGui/QTreeWidgetItem>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QTreeWidgetItem>
 
 #include <boost/any.hpp>
 

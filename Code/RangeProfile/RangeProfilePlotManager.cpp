@@ -37,13 +37,13 @@
 #include "xmlreader.h"
 #include "xmlwriter.h"
 
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 #include <QtGui/QKeyEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMessageBox>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QWheelEvent>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 XERCES_CPP_NAMESPACE_USE
 

@@ -26,9 +26,9 @@
 #include "xmlwriter.h"
 
 #include <QtCore/QDir>
-#include <QtGui/QCheckBox>
-#include <QtGui/QComboBox>
-#include <QtGui/QGridLayout>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QGridLayout>
 
 using namespace std;
 

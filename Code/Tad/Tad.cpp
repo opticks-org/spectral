@@ -10,7 +10,11 @@
 // Keep this include here..it uses an OpenCV macro X.
 // Moving this after Opticks includes will incorrectly use the Xerces X macro.
 #include <cstddef>
+#if (OpenCv_VERSION_MAJOR < 3) // Spectral/Dependencies has 2.2.0
 #include <opencv/cv.h>
+#else
+#include <opencv2/flann/flann.hpp>
+#endif
 #include <memory>
 #include <limits>
 
@@ -36,7 +40,7 @@
 #include "SpectralVersion.h"
 #include "ThresholdLayer.h"
 #include "UtilityServices.h"
-#include <QtCore/QtConcurrentMap>
+#include <QtConcurrent/QtConcurrentMap>
 
 REGISTER_PLUGIN_BASIC(TadModule, Tad);
 
@@ -140,8 +144,13 @@ namespace
             paramsNum = 0.1 * size;
          }
          //search for pixels close in value to the current pixel's spectrum
-         unsigned int count = mIndex.radiusSearch(spectrum, indicesRadius, distsRadius, 
+#if (OpenCv_VERSION_MAJOR < 3) // Spectral/Dependencies has 2.2.0
+         unsigned int count = mIndex.radiusSearch(spectrum, indicesRadius, distsRadius,
             mRadius *2.0 *PI, cv::flann::SearchParams(paramsNum));
+#else
+         unsigned int count = mIndex.radiusSearch(spectrum, indicesRadius, distsRadius,
+            mRadius *2.0 *PI, size, cv::flann::SearchParams(paramsNum));
+#endif
 
          if (static_cast<float>(count) / size * 100.0 >= mThreshold)
          {
@@ -348,7 +357,7 @@ bool Tad::execute(PlugInArgList *pInArgList, PlugInArgList *pOutArgList)
    AoiElement* pLocalAoi = NULL;
 
    //clear out any filtered input when rerunning the tool
-   string resultsName = "TAD Results";
+   std::string resultsName = "TAD Results";
 
    //retrieve the input bitmask iterator, a separate one is created because
    //we'll have to output a new AOI relative to the selected area
@@ -733,7 +742,7 @@ bool Tad::execute(PlugInArgList *pInArgList, PlugInArgList *pOutArgList)
    return true;
 }
 
-RasterElement* Tad::createResults(int numRows, int numColumns, int numBands, const string& sigName, 
+RasterElement* Tad::createResults(int numRows, int numColumns, int numBands, const std::string& sigName,
    EncodingType eType, RasterElement* pElement)
 {
    ModelResource<RasterElement> pResult(static_cast<RasterElement*>(

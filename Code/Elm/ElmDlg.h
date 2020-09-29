@@ -10,7 +10,7 @@
 #ifndef ELMDLG_H
 #define ELMDLG_H
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 #include "AoiElement.h"
 #include "AttachmentPtr.h"

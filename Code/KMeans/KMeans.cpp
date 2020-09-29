@@ -40,8 +40,8 @@
 
 #include <QtCore/QTime>
 #include <QtCore/QString>
-#include <QtGui/QInputDialog>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QInputDialog>
+#include <QtWidgets/QMessageBox>
 
 #include <limits>
 #include <string>

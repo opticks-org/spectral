@@ -10,7 +10,7 @@
 #ifndef DIFFERENCEIMAGEDLG_H
 #define DIFFERENCEIMAGEDLG_H
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 #include <vector>
 #include <string>

@@ -42,7 +42,7 @@
 #include "xmlreader.h"
 #include "xmlwriter.h"
 
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 #include <QtGui/QPixmap>
 
 XERCES_CPP_NAMESPACE_USE

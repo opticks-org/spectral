@@ -10,7 +10,7 @@
 #ifndef MNFDLG_H
 #define MNFDLG_H
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 #include "TypesFile.h"
 

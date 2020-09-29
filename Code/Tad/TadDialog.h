@@ -10,9 +10,9 @@
 #ifndef TADDIALOG_H__
 #define TADDIALOG_H__
 
-#include "ConfigurationSettings.h"
+//#include "ConfigurationSettings.h"
 #include "ui_TadDialog.h"
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 class TadDialog : public QDialog, private Ui_TadDialog
 {

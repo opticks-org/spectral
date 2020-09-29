@@ -29,7 +29,7 @@
 #include "TypesFile.h"
 #include "Wavelengths.h"
 
-#include <QtCore/QtConcurrentMap>
+#include <QtConcurrent/QtConcurrentMap>
 #include <QtCore/QDate>
 
 #include <vector>
