@@ -17,6 +17,7 @@
 
 #include <QtConcurrent/QtConcurrentMap>
 #include <QtConcurrent/QtConcurrent>
+#include <QtCore/QException>
 
 class RasterElement;
 
@@ -36,10 +37,9 @@ private:
    void clearPreviousResults(const std::string& sigName, RasterElement* pElement);
 };
 
-/// This subclass of QtConcurrent::Exception is required to do proper exception
+/// This subclass of QException is required to do proper exception
 /// propagation from within threads managed by QtConcurrent
-/// \todo QtConcurrent::Exception is obsolete: use QtCore::QException instead, after checking for Qt-5.9 compatibility
-class CvExceptionWrapper : public QtConcurrent::Exception
+class CvExceptionWrapper : public QException
 {
 public:
    CvExceptionWrapper()
@@ -58,7 +58,7 @@ public:
 
    virtual ~CvExceptionWrapper() throw () {}
 
-   QtConcurrent::Exception* clone() const
+   QException* clone() const
    {
       return new CvExceptionWrapper(*this);
    }
