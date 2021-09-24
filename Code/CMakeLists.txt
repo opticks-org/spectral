@@ -359,6 +359,7 @@ set(SPECTRAL_PLUGINS # all subfolders that contain a ModuleManager.cpp or module
     Resampler
     Sam
     Signature
+    SignatureWindow
     SpectralLibrary
     SpectralLibraryMatch
     )

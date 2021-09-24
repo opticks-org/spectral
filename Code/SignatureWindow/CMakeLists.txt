@@ -11,7 +11,6 @@ set (SOURCE_FILES
    PropertiesSignaturePlotObject.cpp
    SignaturePlotObject.cpp
    SignatureWindow.cpp
-   SignatureWindowIcons.cpp
    SignatureWindowOptions.cpp
    )
 

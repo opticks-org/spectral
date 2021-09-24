@@ -1,6 +1,6 @@
 /*
  * The information in this file is
- * Copyright(c) 2010 Ball Aerospace & Technologies Corporation
+ * Copyright(c) 2021 Ball Aerospace & Technologies Corporation
  * and is subject to the terms and conditions of the
  * GNU Lesser General Public License Version 2.1
  * The license text is available from   
@@ -8,10 +8,10 @@
  */
 
 #include <QtGui/QBitmap>
-#include <QtGui/QColorDialog>
-#include <QtGui/QInputDialog>
-#include <QtGui/QMenu>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QColorDialog>
+#include <QtWidgets/QInputDialog>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMessageBox>
 #include <QtGui/QMouseEvent>
 
 #include "AppAssert.h"
@@ -198,8 +198,7 @@ SignaturePlotObject::SignaturePlotObject(PlotWidget* pPlotWidget, Progress* pPro
 
    // Plot
    QPixmap pixOpenSig(SignatureWindowIcons::OpenSignatureIcon);
-   QBitmap bmpOpenSig(SignatureWindowIcons::OpenSignatureMask);
-   pixOpenSig.setMask(bmpOpenSig);
+   pixOpenSig.setMask(QPixmap(SignatureWindowIcons::OpenSignatureMask));
 
    mpAddSignatureAction = new QAction(QIcon(pixOpenSig), "Add Signature...", pParent);
    mpAddSignatureAction->setAutoRepeat(false);
@@ -211,8 +210,7 @@ SignaturePlotObject::SignaturePlotObject(PlotWidget* pPlotWidget, Progress* pPro
    pWidget->addAction(mpAddSignatureAction);
 
    QPixmap pixSaveSig(SignatureWindowIcons::SaveSignatureIcon);
-   QBitmap bmpSaveSig(SignatureWindowIcons::SaveSignatureMask);
-   pixSaveSig.setMask(bmpSaveSig);
+   pixSaveSig.setMask(QPixmap(SignatureWindowIcons::SaveSignatureMask));
 
    mpSaveSignatureAction = new QAction(QIcon(pixSaveSig), "Save Signatures...", pParent);
    mpSaveSignatureAction->setAutoRepeat(false);
