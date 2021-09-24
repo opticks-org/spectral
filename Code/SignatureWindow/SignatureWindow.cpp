@@ -1,13 +1,13 @@
 /*
  * The information in this file is
- * Copyright(c) 2010 Ball Aerospace & Technologies Corporation
+ * Copyright(c) 2021 Ball Aerospace & Technologies Corporation
  * and is subject to the terms and conditions of the
  * GNU Lesser General Public License Version 2.1
  * The license text is available from   
  * http://www.gnu.org/licenses/lgpl.html
  */
 
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 #include <QtGui/QBitmap>
 #include <QtGui/QMouseEvent>
 
@@ -242,8 +242,7 @@ bool SignatureWindow::execute(PlugInArgList* pInArgList, PlugInArgList* pOutArgL
 
       // Create the pixel spectrum action
       QPixmap pixPixelSignature(SignatureWindowIcons::PixelSignatureIcon);
-      QBitmap bmpPixelSignatureMask(SignatureWindowIcons::PixelSignatureMask);
-      pixPixelSignature.setMask(bmpPixelSignatureMask);
+      pixPixelSignature.setMask(QPixmap(SignatureWindowIcons::PixelSignatureMask));
 
       mpPixelSignatureAction = new QAction(QIcon(pixPixelSignature), "&Display Pixel Signature", this);
       mpPixelSignatureAction->setAutoRepeat(false);
@@ -252,8 +251,7 @@ bool SignatureWindow::execute(PlugInArgList* pInArgList, PlugInArgList* pOutArgL
 
       // Create the AOI signatures action
       QPixmap pixAoiSignatures(SignatureWindowIcons::AoiSignatureIcon);
-      QBitmap bmpAoiSignaturesMask(SignatureWindowIcons::AoiSignatureMask);
-      pixAoiSignatures.setMask(bmpAoiSignaturesMask);
+      pixAoiSignatures.setMask(QPixmap(SignatureWindowIcons::AoiSignatureMask));
 
       mpAoiSignaturesAction = new QAction(QIcon(pixAoiSignatures), "&Display AOI Signatures and Average "
          "Signature", this);
@@ -277,8 +275,7 @@ bool SignatureWindow::execute(PlugInArgList* pInArgList, PlugInArgList* pOutArgL
 
       // Create the AOI average signature action
       QPixmap pixAoiAverageSig(SignatureWindowIcons::AoiAverageSignatureIcon);
-      QBitmap bmpAoiAverageSigMask(SignatureWindowIcons::AoiAverageSignatureMask);
-      pixAoiAverageSig.setMask(bmpAoiAverageSigMask);
+      pixAoiAverageSig.setMask(QPixmap(SignatureWindowIcons::AoiAverageSignatureMask));
 
       mpAoiAverageSigAction = new QAction(QIcon(pixAoiAverageSig), "&Display AOI Average Signature", this);
       mpAoiAverageSigAction->setAutoRepeat(false);

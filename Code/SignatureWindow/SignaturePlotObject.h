@@ -1,6 +1,6 @@
 /*
  * The information in this file is
- * Copyright(c) 2010 Ball Aerospace & Technologies Corporation
+ * Copyright(c) 2021 Ball Aerospace & Technologies Corporation
  * and is subject to the terms and conditions of the
  * GNU Lesser General Public License Version 2.1
  * The license text is available from   
@@ -12,7 +12,7 @@
 
 #include <QtCore/QMap>
 #include <QtCore/QObject>
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 
 #include "AttachmentPtr.h"
 #include "ColorType.h"

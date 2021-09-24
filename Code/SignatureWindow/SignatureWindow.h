@@ -1,6 +1,6 @@
 /*
  * The information in this file is
- * Copyright(c) 2010 Ball Aerospace & Technologies Corporation
+ * Copyright(c) 2021 Ball Aerospace & Technologies Corporation
  * and is subject to the terms and conditions of the
  * GNU Lesser General Public License Version 2.1
  * The license text is available from   
@@ -10,7 +10,7 @@
 #ifndef SIGNATUREWINDOW_H
 #define SIGNATUREWINDOW_H
 
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 
 #include "AttachmentPtr.h"
 #include "DesktopServices.h"
