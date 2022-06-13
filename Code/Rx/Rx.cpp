@@ -10,7 +10,8 @@
 // Keep this include here..it uses an OpenCV macro X.
 // Moving this after Opticks includes will incorrectly use the Xerces X macro.
 #include <cstddef>
-#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/core_c.h>
 
 #include "AoiElement.h"
 #include "AppVerify.h"

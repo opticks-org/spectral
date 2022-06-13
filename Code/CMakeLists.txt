@@ -256,7 +256,7 @@ find_package(OpenGL REQUIRED)
 find_package(Glew REQUIRED)
 find_package(tiff REQUIRED)
 find_package(geotiff REQUIRED)
-find_package(Ossim REQUIRED) # Is ossim needed? Cem, Mnf, and Elm SConscripts mention it, but not in the code...
+find_package(Ossim) # Is ossim needed? Cem, Mnf, and Elm SConscripts mention it, but not in the code...
 find_package(proj REQUIRED)
 find_package(TBB REQUIRED)
 
@@ -335,8 +335,10 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 include_directories(${Glew_INCLUDE_DIRS})
 include_directories(${tiff_INCLUDE_DIRS})
 include_directories(${geotiff_INCLUDE_DIRS})
-include_directories(${Ossim_INCLUDE_DIRS})
 include_directories(${TBB_INCLUDE_DIRS})
+if(Ossim_FOUND)
+   include_directories(${Ossim_INCLUDE_DIRS})
+endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     include_directories(${EXPAT_INCLUDE_DIRS}) # expat is an XML parser
@@ -412,15 +414,18 @@ if(CODEDIR_PLUGIN_BUILD) # Create the multiple plugins here, rather than in the 
          SpectralUtilities # add_library(SpectralUtilities) is in SpectralUtilities/CMakeLists.txt
          ${Opticks_LIBRARIES}
          ${QT_LIBRARIES}
+	 ${Qwt6ForQt5_LIBRARY}
          ${tiff_LIBRARIES}
          ${geotiff_LIBRARIES}
-         ${Ossim_LIBRARIES}
          ${proj_LIBRARIES}
          ${Xerces_LIBRARIES}
          ${OpenCv_LIBRARIES}
          ${TBB_LIBRARIES}
          ${pthreads_LIBRARIES}
          )
+      if(Ossim_FOUND)
+         target_link_libraries(${LIB_NAME} ${Ossim_LIBRARIES})
+      endif()
    endforeach()
    
    if(WIN32)

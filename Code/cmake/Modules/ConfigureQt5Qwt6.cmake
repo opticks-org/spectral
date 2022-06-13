@@ -60,7 +60,7 @@ set(QT_INCLUDE_DIRS ${Qt5Concurrent_INCLUDE_DIRS};${Qt5Core_INCLUDE_DIRS};${Qt5G
 
 set(QT_LIBRARIES ${Qt5Concurrent_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5OpenGL_LIBRARIES} ${Qt5Xml_LIBRARIES} ${Qt5Network_LIBRARIES} ${Qt5PrintSupport_LIBRARIES})
 # message(STATUS "QT_INCLUDE_DIRS: ${QT_INCLUDE_DIRS}")
-# message(STATUS "QT_LIBRARIES: ${QT_LIBRARIES}")
+ message(STATUS "QT_LIBRARIES: ${QT_LIBRARIES}")
 
 include_directories(${QT_INCLUDE_DIRS})
 # Debug messages:
