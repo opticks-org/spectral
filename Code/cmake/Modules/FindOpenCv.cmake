@@ -1,12 +1,11 @@
-find_path(OpenCv_INCLUDE_DIR opencv2/opencv.hpp)
-#find_path(OpenCv_INCLUDE_DIR opencv.hpp SUFFIXES opencv2)
-
+find_path(OpenCv_INCLUDE_DIR opencv2/opencv.hpp PATH_SUFFIXES opencv2 opencv4)
+#message(STATUS "OpenCv_INCLUDE_DIR: ${OpenCv_INCLUDE_DIR}")
 if(OpenCv_INCLUDE_DIR AND EXISTS "${OpenCv_INCLUDE_DIR}/opencv2/core/version.hpp")
     file(STRINGS "${OpenCv_INCLUDE_DIR}/opencv2/core/version.hpp" OpenCv_Parsed_Major_Version REGEX "^#define CV_MAJOR_VERSION.*[0-9]+.*$")
     file(STRINGS "${OpenCv_INCLUDE_DIR}/opencv2/core/version.hpp" OpenCv_Parsed_Minor_Version REGEX "^#define CV_MINOR_VERSION.*[0-9]+.*$")
     file(STRINGS "${OpenCv_INCLUDE_DIR}/opencv2/core/version.hpp" OpenCv_Parsed_Subminor_Version REGEX "^#define CV_SUBMINOR_VERSION.*[0-9]+.*$")
 
-string(REGEX REPLACE "^.*CV_MAJOR_VERSION.*([0-9]+).*$" "\\1" OpenCv_VERSION_MAJOR "${OpenCv_Parsed_Major_Version}")
+    string(REGEX REPLACE "^.*CV_MAJOR_VERSION.*([0-9]+).*$" "\\1" OpenCv_VERSION_MAJOR "${OpenCv_Parsed_Major_Version}")
     string(REGEX REPLACE "^.*CV_MINOR_VERSION.*([0-9]+).*$" "\\1" OpenCv_VERSION_MINOR "${OpenCv_Parsed_Minor_Version}")
     string(REGEX REPLACE "^.*CV_SUBMINOR_VERSION.*([0-9]+).*$" "\\1" OpenCv_VERSION_RELEASE "${OpenCv_Parsed_Subminor_Version}")
 
@@ -88,4 +87,5 @@ else()
 endif()
 set(OpenCv_INCLUDE_DIRS ${OpenCv_INCLUDE_DIR})
 mark_as_advanced(OpenCv_INCLUDE_DIR)
+message(STATUS "${OpenCv_LIBRARIES}")
 set(OpenCv_FOUND ${OPENCV_FOUND})
